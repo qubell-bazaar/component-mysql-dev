@@ -1,0 +1,203 @@
+application:
+  configuration:
+    input.db-version: "5.0" 
+    input.db-root-password: uR1zaebah0Qu
+  
+  interfaces:
+    input:
+      db-version: "bind(workflow#input.db-version)"
+      db-root-password: "bind(workflow#input.db-root-password)"
+    management:
+      create-db: "bind(workflow#actions.create-db)"
+      run-sql: "bind(workflow#actions.run-sql)"
+      change-grants: "bind(workflow#actions.change-grants)"
+      #todo: set sql 
+    nice-screen:
+      host: "bind(workflow#result.host)"
+      port: "bind(workflow#result.db-port)"
+    output:
+      dbms: "bind(workflow#result.dbms)"
+      
+  bindings:
+    - [workflow, wfService]
+    - [workflow, secureStore]
+    
+  components:
+    wfService:
+      type: reference.Service
+      interfaces:
+        executor:
+          execute-workflow: receive-command(object request => object status => object status)
+    secureStore:
+      type: reference.Service
+      interfaces:
+        keypair-store:
+          get-keypair: receive-command(string id => object privateKey)
+          
+    workflow:
+      type: workflow.Instance
+      interfaces:
+        input:
+          db-version: configuration(string)
+          db-root-password: configuration(string)
+        actions:
+          create-db: receive-command(string db-name => object db)
+          run-sql: receive-command(object db, string sql-url)
+          change-grants: receive-command(list<string> app-hosts, object db, object user, string privileges)
+        result:
+          dbms: publish-signal(object)
+          #for ui only
+          db-port: publish-signal(string)
+          host: publish-signal(string)
+       
+        keypair-store:
+          get-keypair: send-command(string id => object privateKey)
+          
+      required: [keypair-store]
+          
+      configuration:
+        configuration.workflows:  
+          launch:
+            parameters:
+              - db-version: &db-version
+                  description: MySQL Server version   
+              - db-root-password:
+                  description: Root Password
+                  default: uR1zaebah0Qu
+                                           
+            steps:
+              - provision-vm:
+                  action: provisionAmazonVm
+                  phase: provision
+                  parameters:
+                    roleName: default
+                    hardwareId: m1.small
+                    retryCount: 1
+                    jcloudsProvider: aws-ec2
+                    jcloudsEndpoint: https://ec2.us-east-1.amazonaws.com
+                    jcloudsRegions: us-east-1
+                    jcloudsNodeNamePrefix: component
+                    jcloudsIdentity: "{$.identity}"
+                    jcloudsCredential: "{$.credential}"
+                    vmIdentity: ubuntu
+                    imageId: us-east-1/ami-0fac7566
+                    ec2SecurityGroup: default
+                  output:
+                    db-host: ips
+          
+              - db-install:
+                  action: "chefsolo"
+                  precedingPhases: [ provision ]
+                  phase: db-install
+                  parameters:
+                    roles: [ default ]
+                    runList: ["recipe[mysql::server]"]
+                    recipeUrl: "https://s3.amazonaws.com/ab-comp/mysql/cookbooks.tar.gz"
+                    jattrs:
+                      mysql:
+                        server_root_password: "{$.db-root-password}"
+                        server_repl_password: "{$.db-root-password}"
+                        server_debian_password: "{$.db-root-password}"
+            
+            return:
+              #jdbc: 
+              #  value: "mysql://{$.db-user}:{$.db-pass}@{$.db-host}:3306/{$.db-name}"
+              host:
+                value: "{$.db-host}"
+              db-port:
+                value: 3306
+              #db-user:
+              #  value: "{$.db-user}"
+              #db-pass:
+              #  value: "{$.db-pass}"
+              #db-name:
+              #  value: "{$.db-name}"
+              dbms:
+                value:
+                   host: "{$.db-host}"
+                   port: "3306"
+                   root-password: "{$.db-root-password}"                 
+                   
+          create-db:
+            parameters:
+              - db-name:
+                  description: Create database name
+            steps:
+              - db-deploy:
+                  action: "chefsolo"
+                  parameters:
+                    roles: [ default ]
+                    runList: [ "recipe[mysql-component::db_create]" ]
+                    recipeUrl: "https://s3.amazonaws.com/ab-comp/mysql/cookbooks.tar.gz"
+                    jattrs:
+                      mysql:
+                        server_root_password: "{$.db-root-password}"
+                      mysql-component:
+                        db_name: "{$.db-name}"
+            
+            return:
+              db:
+                value:
+                  name: "{$.db-name}"
+
+          run-sql:
+            parameters:
+              - db:
+                  description: Database
+              - sql-url:
+                  description: SQL query url
+            steps:
+              - db-deploy:
+                  action: "chefsolo"
+                  parameters:
+                    roles: [ default ]
+                    runList: [ "recipe[mysql-component::sql_query]" ]
+                    recipeUrl: "https://s3.amazonaws.com/ab-comp/mysql/cookbooks.tar.gz"
+                    jattrs:
+                      mysql:
+                        server_root_password: "{$.db-root-password}"
+                      mysql-component:
+                        db_name: "{$.db.name}"
+                        sql_url: "{$.sql_url}"
+
+          change-grants:
+            parameters:
+              - app-hosts:
+                  description: Host allow in MySQL
+                  default: ["1.1.1.1", "2.2.2.2", "3.3.3.3"]
+              #- db-name:
+              #    description: Grant access to database
+              #- db-user:
+              #    description: Grant user
+              #- db-pass:
+              #    description: "User's password"
+              - db:
+                  description: "Database (json with name)"
+              - user:
+                  description: "User (json with name and password)"
+              - privileges:
+                  description: Grant priveleges
+                  default: ""
+   
+            steps: 
+              - change-grants:
+                  action: "chefsolo"
+                  parameters:
+                    roles: [ default ]
+                    runList: [ "recipe[mysql-component:user_modify]" ]
+                    recipeUrl: "https://s3.amazonaws.com/ab-comp/cookbooks.tar.gz"
+                    jattrs:
+                      mysql:
+                        server_root_password: "{$.db-root-password}"
+                      mysql-component:
+                        #todo: allow processing hosts array
+                        host: "%"
+                        db_name: "{$.db.name}" 
+                        db_user: "{$.user.name}"
+                        db_pass: "{$.user.password}"
+                        priveleges: "{$.privileges}"
+
+          destroy:
+            steps:
+              - destroy:
+                  action: undeployEnv
