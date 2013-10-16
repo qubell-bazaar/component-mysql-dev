@@ -6,8 +6,8 @@
 #
 # All rights reserved - Do Not Redistribute
 #
-include_recipe "mysql-component:user_drop"
-include_recipe "mysql-component:user_create"
+include_recipe "mysql-component::user_drop"
+include_recipe "mysql-component::user_create"
 
 #mysql_database_user node['mysql-component']['db_username'] do
 #  connection ({:host => 'localhost', :username => 'root', :password => node['mysql']['server_root_password']})
