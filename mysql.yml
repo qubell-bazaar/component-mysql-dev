@@ -1,8 +1,8 @@
 application:
   configuration:
-    input.db-version: "5.0" 
+    input.db-version: "5.0"
     input.db-root-password: uR1zaebah0Qu
-  
+
   interfaces:
     input:
       db-version: "bind(workflow#input.db-version)"
@@ -17,23 +17,24 @@ application:
       port: "bind(workflow#result.db-port)"
     output:
       dbms: "bind(workflow#result.dbms)"
-      
+
   bindings:
     - [workflow, wfService]
     - [workflow, secureStore]
-    
+
   components:
     wfService:
       type: reference.Service
       interfaces:
         executor:
           execute-workflow: receive-command(object request => object status => object status)
+          #execute-command: send-command(string interface, string command, map<string, object> arguments => map<string, object> response => map<string, object> response)
     secureStore:
       type: reference.Service
       interfaces:
         keypair-store:
           get-keypair: receive-command(string id => object privateKey)
-          
+
     workflow:
       type: workflow.Instance
       interfaces:
@@ -41,20 +42,21 @@ application:
           db-version: configuration(string)
           db-root-password: configuration(string)
         actions:
-          create-db: receive-command(string db-name => object db)
-          run-sql: receive-command(object db, string sql-url)
-          change-grants: receive-command(list<string> app-host, object db, object user, string privileges)
+          create-db: receive-command(string db-name)
+          run-sql: receive-command(string db-name, string sql-url)
+          #change-grants: receive-command(list<string> app-host, object db, object user, string privileges)
+          change-grants: receive-command(list<string> app-host, string db-name, string db-user, string db-password, list<string> privileges)
         result:
           dbms: publish-signal(object)
           #for ui only
           db-port: publish-signal(string)
           host: publish-signal(string)
-       
+
         keypair-store:
           get-keypair: send-command(string id => object privateKey)
-          
+
       required: [keypair-store]
-          
+
       configuration:
         configuration.workflows:  
           launch:
@@ -64,7 +66,7 @@ application:
               - db-root-password:
                   description: Root Password
                   default: uR1zaebah0Qu
-                                           
+
             steps:
               - provision-vm:
                   action: provisionAmazonVm
@@ -84,7 +86,7 @@ application:
                     ec2SecurityGroup: default
                   output:
                     db-host: ips
-          
+
               - db-install:
                   action: "chefsolo"
                   precedingPhases: [ provision ]
@@ -98,7 +100,7 @@ application:
                         server_root_password: "{$.db-root-password}"
                         server_repl_password: "{$.db-root-password}"
                         server_debian_password: "{$.db-root-password}"
-            
+
             return:
               #jdbc: 
               #  value: "mysql://{$.db-user}:{$.db-pass}@{$.db-host}:3306/{$.db-name}"
@@ -116,8 +118,8 @@ application:
                 value:
                    host: "{$.db-host}"
                    port: "3306"
-                   root-password: "{$.db-root-password}"                 
-                   
+                   root-password: "{$.db-root-password}"
+
           create-db:
             parameters:
               - db-name:
@@ -134,7 +136,7 @@ application:
                         server_root_password: "{$.db-root-password}"
                       mysql-component:
                         db_name: "{$.db-name}"
-            
+
             return:
               db:
                 value:
@@ -157,8 +159,8 @@ application:
                       mysql:
                         server_root_password: "{$.db-root-password}"
                       mysql-component:
-                        db_name: "{$.db.name}"
-                        sql_url: "{$.sql_url}"
+                        db_name: "{$.db-name}"
+                        sql_url: "{$.sql-url}"
 
           change-grants:
             parameters:
@@ -171,30 +173,32 @@ application:
               #    description: Grant user
               #- db-pass:
               #    description: "User's password"
-              - db:
-                  description: "Database (json with name)"
-              - user:
-                  description: "User (json with name and password)"
+              - db-name:
+                  description: "Database name"
+              - db-user:
+                  description: "User name"
+              - db-password:
+                  description: "User password"
               - privileges:
                   description: Grant privileges
                   default: ""
-   
+
             steps: 
               - change-grants:
                   action: "chefsolo"
                   parameters:
                     roles: [ default ]
-                    runList: [ "recipe[mysql-component:user_modify]" ]
-                    recipeUrl: "https://s3.amazonaws.com/ab-comp/cookbooks.tar.gz"
+                    runList: [ "recipe[mysql-component::user_modify]" ]
+                    recipeUrl: "https://s3.amazonaws.com/ab-comp/mysql/cookbooks.tar.gz"
                     jattrs:
                       mysql:
                         server_root_password: "{$.db-root-password}"
                       mysql-component:
                         #todo: allow processing hosts array
-                        host: "%"
-                        db_name: "{$.db.name}" 
-                        db_user: "{$.user.name}"
-                        db_pass: "{$.user.password}"
+                        host: "{$.app-host}"
+                        db_name: "{$.db-name}" 
+                        db_user: "{$.db-user}"
+                        db_pass: "{$.db-password}"
                         privileges: "{$.privileges}"
 
           destroy:
