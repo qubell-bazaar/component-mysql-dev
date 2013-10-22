@@ -9,8 +9,8 @@
 include_recipe "database::mysql"
 
 #if ( node['mysql-component']['priveleges'].empty?)
-if ( node['mysql-component']['priveleges'].nil?)
- node.set['mysql-component']['priveleges']='[all]'
+if ( node['mysql-component']['privileges'].nil?)
+ node.set['mysql-component']['privileges']=['all']
 end
 
 node['mysql-component']['host'].each do |host|
@@ -19,7 +19,7 @@ node['mysql-component']['host'].each do |host|
     host "#{host}"
     password node['mysql-component']['db_pass']
     database_name node['mysql-component']['db_name']
-    privileges node['mysql-component']['priveleges']
+    privileges node['mysql-component']['privileges']
     action :grant
   end
 end

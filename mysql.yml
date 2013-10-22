@@ -12,11 +12,13 @@ application:
       run-sql: "bind(workflow#actions.run-sql)"
       change-grants: "bind(workflow#actions.change-grants)"
       #todo: set sql 
-    nice-screen:
-      host: "bind(workflow#result.host)"
-      port: "bind(workflow#result.db-port)"
+    #nice-screen:
+    #  db-host: "bind(workflow#result.db-host)"
+    #  db-port: "bind(workflow#result.db-port)"
     output:
       dbms: "bind(workflow#result.dbms)"
+      db-host: "bind(workflow#result.db-host)"
+      db-port: "bind(workflow#result.db-port)"
 
   bindings:
     - [workflow, wfService]
@@ -28,7 +30,7 @@ application:
       interfaces:
         executor:
           execute-workflow: receive-command(object request => object status => object status)
-          #execute-command: send-command(string interface, string command, map<string, object> arguments => map<string, object> response => map<string, object> response)
+          execute-command: send-command(string interface, string command, map<string, object> arguments => map<string, object> response => map<string, object> response)
     secureStore:
       type: reference.Service
       interfaces:
@@ -43,14 +45,14 @@ application:
           db-root-password: configuration(string)
         actions:
           create-db: receive-command(string db-name)
-          run-sql: receive-command(string db-name, string sql-url)
+          run-sql: receive-command(string db-name, list<string> sql-url)
           #change-grants: receive-command(list<string> app-host, object db, object user, string privileges)
           change-grants: receive-command(list<string> app-host, string db-name, string db-user, string db-password, list<string> privileges)
         result:
           dbms: publish-signal(object)
           #for ui only
           db-port: publish-signal(string)
-          host: publish-signal(string)
+          db-host: publish-signal(string)
 
         keypair-store:
           get-keypair: send-command(string id => object privateKey)
@@ -104,7 +106,7 @@ application:
             return:
               #jdbc: 
               #  value: "mysql://{$.db-user}:{$.db-pass}@{$.db-host}:3306/{$.db-name}"
-              host:
+              db-host:
                 value: "{$.db-host}"
               db-port:
                 value: 3306
@@ -116,8 +118,8 @@ application:
               #  value: "{$.db-name}"
               dbms:
                 value:
-                   host: "{$.db-host}"
-                   port: "3306"
+                   db-host: "{$.db-host}"
+                   db-port: "3306"
                    root-password: "{$.db-root-password}"
 
           create-db:
@@ -147,7 +149,7 @@ application:
               - db:
                   description: Database
               - sql-url:
-                  description: SQL query url
+                  description: SQL query urls (["url1", "url2"])
             steps:
               - db-deploy:
                   action: "chefsolo"
@@ -166,7 +168,7 @@ application:
             parameters:
               - app-host:
                   description: Host allow in MySQL
-                  default: ["1.1.1.1", "2.2.2.2", "3.3.3.3"]
+                  default: ["%"]
               #- db-name:
               #    description: Grant access to database
               #- db-user:
@@ -181,7 +183,6 @@ application:
                   description: "User password"
               - privileges:
                   description: Grant privileges
-                  default: ""
 
             steps: 
               - change-grants:
