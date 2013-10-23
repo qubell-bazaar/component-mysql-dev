@@ -107,9 +107,9 @@ application:
               #jdbc: 
               #  value: "mysql://{$.db-user}:{$.db-pass}@{$.db-host}:3306/{$.db-name}"
               db-host:
-                value: "{$.db-host}"
+                value: "{$.db-host[0]}"
               db-port:
-                value: 3306
+                value: "3306"
               #db-user:
               #  value: "{$.db-user}"
               #db-pass:
@@ -118,7 +118,7 @@ application:
               #  value: "{$.db-name}"
               dbms:
                 value:
-                   db-host: "{$.db-host}"
+                   db-host: "{$.db-host[0]}"
                    db-port: "3306"
                    root-password: "{$.db-root-password}"
 
