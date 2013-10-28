@@ -52,7 +52,7 @@ application:
           dbms: publish-signal(object)
           #for ui only
           db-port: publish-signal(string)
-          db-host: publish-signal(string)
+          db-host: publish-signal(list<string>)
 
         keypair-store:
           get-keypair: send-command(string id => object privateKey)
@@ -107,7 +107,7 @@ application:
               #jdbc: 
               #  value: "mysql://{$.db-user}:{$.db-pass}@{$.db-host}:3306/{$.db-name}"
               db-host:
-                value: "{$.db-host[0]}"
+                value: "{$.db-host}"
               db-port:
                 value: "3306"
               #db-user:
@@ -118,7 +118,7 @@ application:
               #  value: "{$.db-name}"
               dbms:
                 value:
-                   db-host: "{$.db-host[0]}"
+                   db-host: "{$.db-host}"
                    db-port: "3306"
                    root-password: "{$.db-root-password}"
 
