@@ -146,7 +146,7 @@ application:
 
           run-sql:
             parameters:
-              - db:
+              - db-name:
                   description: Database
               - sql-url:
                   description: SQL query urls (["url1", "url2"])
