@@ -167,8 +167,7 @@ application:
           change-grants:
             parameters:
               - app-hosts:
-                  description: Host allow in MySQL
-                  default: ["%"]
+                  description: "Hosts allow in MySQL ([array])"
               #- db-name:
               #    description: Grant access to database
               #- db-user:
