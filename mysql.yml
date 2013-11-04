@@ -46,8 +46,8 @@ application:
         actions:
           create-db: receive-command(string db-name)
           run-sql: receive-command(string db-name, list<string> sql-url)
-          #change-grants: receive-command(list<string> app-host, object db, object user, string privileges)
-          change-grants: receive-command(list<string> app-host, string db-name, string db-user, string db-password, list<string> privileges)
+          #change-grants: receive-command(list<string> app-hosts, object db, object user, string privileges)
+          change-grants: receive-command(list<string> app-hosts, string db-name, string db-user, string db-password, list<string> privileges)
         result:
           dbms: publish-signal(object)
           #for ui only
@@ -166,7 +166,7 @@ application:
 
           change-grants:
             parameters:
-              - app-host:
+              - app-hosts:
                   description: Host allow in MySQL
                   default: ["%"]
               #- db-name:
@@ -196,7 +196,7 @@ application:
                         server_root_password: "{$.db-root-password}"
                       mysql-component:
                         #todo: allow processing hosts array
-                        host: "{$.app-host}"
+                        host: "{$.app-hosts}"
                         db_name: "{$.db-name}" 
                         db_user: "{$.db-user}"
                         db_pass: "{$.db-password}"
