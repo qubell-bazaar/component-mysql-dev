@@ -1,0 +1,15 @@
+env:
+ global:
+   - "ARTIFACTS_AWS_REGION=us-east-1"
+   - "ARTIFACTS_S3_BUCKET=qubell-starter-kit-artifacts"
+   - secure: "S6goQo2GCnw+pgi/ikBQW2HzVk/bCN1oXZKxraOeDDZQd9hoiTpDpltezitR0/CgMXlML3YXsOMOLFeBSYGs+tbEkaYzvnqsDUx0CB2a5c83H4yApb3zdFcUlCVWgZJ0PZkqXNKPP/Pc7V1lKJdrkoIqxzoGvJWx6CpJi3jAVh8="
+   - secure: "inMDoJr7PacmFiHyo6UMW/YDYOMRxi06SoUDKJQKkF9jKJU+yLQaHd/BGdQ17+jk1JrcPwayZAKoICHd6ic0MUrtP2ADqEi9knJs3ZbQm8oYvcKIEBPYV7bThc+2lNum9xZrh8uh+y3zESHFrjrMSA9vepXWZD3e5q6UM4Jm2rM="
+
+before_script:
+   - gem install travis-artifacts --no-ri --no-rdoc
+   - git submodule update --init --recursive
+
+script: ./build.sh
+
+after_success:
+  - "REPO_NAME=$(echo ${TRAVIS_REPO_SLUG} | cut -d/ -f2); OWNER_NAME=$(echo ${TRAVIS_REPO_SLUG} | cut -d/ -f1); travis-artifacts upload --path ${REPO_NAME}-cookbooks.tar.gz --target-path ${OWNER_NAME}/"
