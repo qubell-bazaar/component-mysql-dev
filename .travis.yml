@@ -24,7 +24,7 @@ before_script:
    - ./upload.sh dev
    - REPO_NAME=$(echo ${TRAVIS_REPO_SLUG} | cut -d/ -f2); sed -i 's/${REPO_NAME}-cookbooks-stable/${REPO_NAME}-cookbooks-dev/g' ${REPO_NAME}.yml
 
-script: python test/main.py
+script: cd test && python main.py
 
 after_success:
   - ./build.sh stable
