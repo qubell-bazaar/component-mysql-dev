@@ -20,12 +20,8 @@ install: "pip install -r test/requirements.txt"
 before_script:
    - gem install travis-artifacts --no-ri --no-rdoc
    - git submodule update --init --recursive
-   - ./build.sh dev
-   - ./upload.sh dev
-   - REPO_NAME=$(echo ${TRAVIS_REPO_SLUG} | cut -d/ -f2); sed -i 's/${REPO_NAME}-cookbooks-stable/${REPO_NAME}-cookbooks-dev/g' ${REPO_NAME}.yml
 
-script: cd test && python main.py
+script: ./build.sh
 
-after_success:
-  - ./build.sh stable
-  - ./upload.sh stable
+#after_success:
+#  -

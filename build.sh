@@ -1,7 +1,45 @@
 #!/bin/bash
 
-REVISION=$1
+REPO_NAME=$(echo ${TRAVIS_REPO_SLUG} | cut -d/ -f2)
+OWNER_NAME=$(echo ${TRAVIS_REPO_SLUG} | cut -d/ -f1)
 
-REPO_NAME=$(echo ${TRAVIS_REPO_SLUG} | cut -d/ -f2);
+function check {
+    "$@"
+    status=$?
+    if [ $status -ne 0 ]; then
+        echo "error run $@"
+        exit $status
+    fi
+    return $status
+}
 
-tar -czf ${REPO_NAME}-cookbooks-${REVISION}.tar.gz cookbooks
+function package {
+    local REVISION=$1
+
+    tar -czf ${REPO_NAME}-cookbooks-${REVISION}.tar.gz cookbooks
+}
+
+function publish {
+    local REVISION=$1
+
+    package $REVISION
+
+    travis-artifacts upload --path ${REPO_NAME}-cookbooks-${REVISION}.tar.gz --target-path ${OWNER_NAME}/
+}
+
+function replace {
+    sed -i 's/${REPO_NAME}-cookbooks-stable/${REPO_NAME}-cookbooks-dev/g' ./${REPO_NAME}.yml
+    cat ${REPO_NAME}.yml
+}
+
+
+publish dev
+replace
+
+pushd test
+
+check python main.py
+
+popd
+
+publish stable
