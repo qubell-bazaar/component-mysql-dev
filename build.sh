@@ -28,7 +28,7 @@ function publish {
 }
 
 function replace {
-    sed -i 's/${REPO_NAME}-cookbooks-stable/${REPO_NAME}-cookbooks-dev/g' ./${REPO_NAME}.yml
+    check sed -i.bak -e 's/'${REPO_NAME}'-cookbooks-stable/'${REPO_NAME}'-cookbooks-dev/g' ${REPO_NAME}.yml
     cat ${REPO_NAME}.yml
 }
 
