@@ -5,11 +5,11 @@ env:
    - "QUBELL_TENANT=https://express.qubell.com"
    - "PROVIDER_TYPE=aws-ec2"
    - "PROVIDER_REGION=us-east-1"
-   - secure: "B1or//ghjJOAeUppc5CaYFgSWVvoR7NRxRk3rA/OOEttBTIBExqnoCCupWzTogakquYcYjXZwYKBcBqvHwXeRj+U7X6te+NEacSO1iQGX1oyDM+LmAJYS0TnrkGNmIqIWBDnqNvM1Oqd9KEuXHmz1jW0w+A41gu7ueX1d9BFHQE="
-   - secure: "LBdaG9oDpvdm5vQMFq1e9KP1Zq4djhKjXTgg2UeY6MBW7E6HzKADMDL6HTRaHkuzjxwYEFUml/Zgv83BqDoy8DWPCMmAyjPS/rDSKM+TL35J/gA9sJve4bX4kloVVN2tbfOlF8T0zDpvaiVO3ctrpnJSKm5oKvtv7fY1s5SMvjM="
-   - secure: "MBxm/L/I1ARll0CvQ7rUeMwuHMKJIQVt3Ll4d7Fsd+ICSj+dWyzuQlt39gDIUcMw7L38G1dT//tuohoQf7TnoaL9/V+IVDuqqo+V/0mNCxDD/87B/3Uds2zn43+8KjOmE5OIvaDjNRhrT/cQCrfD4/XNnA4Q4rRsWaaonQSp+J4="
-   - secure: "Q+l6oh240mbvWWQebjB6ryYvXmgqfG2O9D/eUIl3+BzzFAb3/hOunPwEXVg1ubbfP0sU/Lb9AsIyNhItBfTKEigzc9xTx2oGHlSXeHnuJmmOio51LekFhO+lpE+hoaXRvUNa/SRT2c2hstdZSiF57y+mh7X0C0sbzf8gcMfG7RE="
-   - secure: "WpEO4zCMyFrnpAnGO+F956vWyflZNVT7v3D+beRQ/JofxJJ+gv50qwcifyoEqODX7UBaVke0Vg9nkDuAVKZd9ZEdwwNSLxg4bRQGZ+Q6VFtn7j+BFp7amior1n1dnO75EvFv2FsoGcLcPUm0OnUmaLaJS9uV6h21M2t+nfJB5ig="
+   - secure: "WVpiRvdx/m1cSOsCX8QmXQ3UCHVzq9V99NXdOvzsJutF8OI3esQldsKukmHaQ8p7FM1BfPmkU8UJ+KLmiCt2U8W5R7Drn/Uy2nDO+FgL79a+B3fTSEdsb9tTq5h+ysaevoCtoVDtcXKkAkZ64LWVA+1lYX9x13YYkUpKTCBqr6w="
+   - secure: "PmerA9NTzZTpsevv3yvA2+0Ov9ZMfU76jDq6iLxVLgbAS9IoWfoiq/495cm1D10NztapPNIpm8bBvg8U6BsQjZANJOkH7uTNvPTmr2xVGdks5Bu0GIlttg2JmKRop2YOPbFj8UfYwCRSgWM/Zsik2jdoxpAGWXOWwuwx88lvAss="
+   - secure: "TnOx8OWEb5xCE4ednu1c+AJ5GuwI4O/NB6mbf2/1H/I49MxH1OwT9uVT45my4neCadBTirgXjCLxEiCEJS6xI0vZUu6Mwoa+BsSL+uWjHR0CMHl5ZbjyYSo69O6ENmQ+er6MD7gRO67E7mxjglttPP1TtPbHdapaaVwP6lkj2us="
+   - secure: "DCHKNChWO21wlslmQCy58jhLyKXsjnBRWa3p2rqqiFt/p58Ne6VgT7tyKQ2omT06+zNXYpyLbeA7GWWc9bOKLcmS5lYN4EZp3kDwi3KfrfoT5WV76ku/MaPM3pXfqzRzOrtfC/2ql3Th27UbhPuENHzKz3vez2hI2IrcFoNSwqw="
+   - secure: "YjVUSvvKiwuoenz8m+8gmQv0u9jvTAu2H89qwmyLDZNnY86Ef2/9wpftlAS31FNFEg+TW2EHPCQid7myOZ7b8bBGdViLJffM0XRr3cZSlyLATlCU/A8aR4aAddcUqUbW09yJx17lwBDVe01xWlnvO/d0Yhm4zHSicOHr/UaXTeg="
 
 language: python
 python:
