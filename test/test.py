@@ -6,10 +6,10 @@ from qubell.api.private.testing import BaseTestCase, instance, workflow, values
 
 
 class MysqlTestCase(BaseComponentTestCase):
-    name = "mysql-component"
+    name = "component-mysql-dev"
     apps = [{
         "name": name,
-        "file": os.path.join(os.path.dirname(__file__), '../component-mysql-dev.yml')
+        "file": os.path.realpath(os.path.join(os.path.dirname(__file__), '../%s.yml' % name))
     }]
 
     @instance(byApplication=name)
