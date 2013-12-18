@@ -1,25 +1,16 @@
 import os
 import pymysql
 
-from main import parameters, platform
+from test_runner import BaseComponentTestCase
 from qubell.api.private.testing import BaseTestCase, instance, workflow, values
 
 
-class MysqlTestCase(BaseTestCase):
-    platform = platform
-    parameters = parameters
+class MysqlTestCase(BaseComponentTestCase):
     name = "mysql-component"
-
-    @classmethod
-    def environment(cls, organization):
-        base_env = super(MysqlTestCase, cls).environment(organization)
-
-        base_env['applications'] = [{
-            "name": cls.name,
-            "file": os.path.join(os.path.dirname(__file__), '../component-mysql.yml')
-        }]
-
-        return base_env
+    apps = [{
+        "name": name,
+        "file": os.path.join(os.path.dirname(__file__), '../component-mysql-dev.yml')
+    }]
 
     @instance(byApplication=name)
     @values({"db-port": "port", "db-host": "host"})

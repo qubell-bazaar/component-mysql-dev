@@ -38,7 +38,7 @@ replace
 
 pushd test
 
-check python main.py
+check python test_runner.py
 
 popd
 

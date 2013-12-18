@@ -14,9 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
 import os
 import unittest
 from qubell.api.private.platform import QubellPlatform, Context
+from qubell.api.private.testing import BaseTestCase
 
 parameters = {
     'organization': os.getenv('QUBELL_ORGANIZATION', None),
@@ -34,5 +36,24 @@ context = Context(user=parameters['user'], password=parameters['pass'], api=para
 platform = QubellPlatform(context=context)
 assert platform.authenticate()
 
+
+class BaseComponentTestCase(BaseTestCase):
+    platform = platform
+    parameters = parameters
+    apps = []
+
+    @classmethod
+    def environment(cls, organization):
+        base_env = super(BaseComponentTestCase, cls).environment(organization)
+
+        base_env['applications'] = cls.apps
+
+        return base_env
+
 if __name__ == '__main__':
-    unittest.main(argv=["qubell-test", "discover", "--pattern=test*.py"])
+    if len(sys.argv) > 0:
+        test_dir = os.path.relpath(sys.argv[0])
+    else:
+        test_dir = os.path.relpath("./")
+
+    unittest.main(argv=["qubell-test-runner", "discover", "--pattern=" + os.path.join(test_dir, "test*.py")])
