@@ -11,10 +11,6 @@ application:
       create-db: "bind(workflow#actions.create-db)"
       run-sql: "bind(workflow#actions.run-sql)"
       change-grants: "bind(workflow#actions.change-grants)"
-      #todo: set sql 
-    #nice-screen:
-    #  db-host: "bind(workflow#result.db-host)"
-    #  db-port: "bind(workflow#result.db-port)"
     output:
       dbms: "bind(workflow#result.dbms)"
       db-host: "bind(workflow#result.db-host)"
@@ -46,7 +42,6 @@ application:
         actions:
           create-db: receive-command(string db-name)
           run-sql: receive-command(string db-name, list<string> sql-url)
-          #change-grants: receive-command(list<string> app-hosts, object db, object user, string privileges)
           change-grants: receive-command(list<string> app-hosts, string db-name, string db-user, string db-password, list<string> privileges)
         result:
           dbms: publish-signal(object)
@@ -96,7 +91,7 @@ application:
                   parameters:
                     roles: [ default ]
                     runList: ["recipe[mysql::server]"]
-                    recipeUrl: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/dieu/component-mysql-cookbooks-stable.tar.gz"
+                    recipeUrl: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable.tar.gz"
                     jattrs:
                       mysql:
                         server_root_password: "{$.db-root-password}"
@@ -104,18 +99,10 @@ application:
                         server_debian_password: "{$.db-root-password}"
 
             return:
-              #jdbc: 
-              #  value: "mysql://{$.db-user}:{$.db-pass}@{$.db-host}:3306/{$.db-name}"
               db-host:
                 value: "{$.db-host}"
               db-port:
                 value: "3306"
-              #db-user:
-              #  value: "{$.db-user}"
-              #db-pass:
-              #  value: "{$.db-pass}"
-              #db-name:
-              #  value: "{$.db-name}"
               dbms:
                 value:
                    db-host: "{$.db-host}"
@@ -132,7 +119,7 @@ application:
                   parameters:
                     roles: [ default ]
                     runList: [ "recipe[mysql-component::db_create]" ]
-                    recipeUrl: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/dieu/component-mysql-cookbooks-stable.tar.gz"
+                    recipeUrl: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable.tar.gz"
                     jattrs:
                       mysql:
                         server_root_password: "{$.db-root-password}"
@@ -156,7 +143,7 @@ application:
                   parameters:
                     roles: [ default ]
                     runList: [ "recipe[mysql-component::sql_query]" ]
-                    recipeUrl: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/dieu/component-mysql-cookbooks-stable.tar.gz"
+                    recipeUrl: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable.tar.gz"
                     jattrs:
                       mysql:
                         server_root_password: "{$.db-root-password}"
@@ -168,12 +155,6 @@ application:
             parameters:
               - app-hosts:
                   description: "Hosts allow in MySQL ([array])"
-              #- db-name:
-              #    description: Grant access to database
-              #- db-user:
-              #    description: Grant user
-              #- db-pass:
-              #    description: "User's password"
               - db-name:
                   description: "Database name"
               - db-user:
@@ -189,12 +170,11 @@ application:
                   parameters:
                     roles: [ default ]
                     runList: [ "recipe[mysql-component::user_modify]" ]
-                    recipeUrl: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/dieu/component-mysql-cookbooks-stable.tar.gz"
+                    recipeUrl: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable.tar.gz"
                     jattrs:
                       mysql:
                         server_root_password: "{$.db-root-password}"
                       mysql-component:
-                        #todo: allow processing hosts array
                         host: "{$.app-hosts}"
                         db_name: "{$.db-name}" 
                         db_user: "{$.db-user}"
