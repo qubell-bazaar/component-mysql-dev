@@ -10,6 +10,7 @@ env:
    - secure: "TnOx8OWEb5xCE4ednu1c+AJ5GuwI4O/NB6mbf2/1H/I49MxH1OwT9uVT45my4neCadBTirgXjCLxEiCEJS6xI0vZUu6Mwoa+BsSL+uWjHR0CMHl5ZbjyYSo69O6ENmQ+er6MD7gRO67E7mxjglttPP1TtPbHdapaaVwP6lkj2us="
    - secure: "DCHKNChWO21wlslmQCy58jhLyKXsjnBRWa3p2rqqiFt/p58Ne6VgT7tyKQ2omT06+zNXYpyLbeA7GWWc9bOKLcmS5lYN4EZp3kDwi3KfrfoT5WV76ku/MaPM3pXfqzRzOrtfC/2ql3Th27UbhPuENHzKz3vez2hI2IrcFoNSwqw="
    - secure: "YjVUSvvKiwuoenz8m+8gmQv0u9jvTAu2H89qwmyLDZNnY86Ef2/9wpftlAS31FNFEg+TW2EHPCQid7myOZ7b8bBGdViLJffM0XRr3cZSlyLATlCU/A8aR4aAddcUqUbW09yJx17lwBDVe01xWlnvO/d0Yhm4zHSicOHr/UaXTeg="
+   - secure: "LjfQgUwxem70QGVEm389AQjEHs/R/n1ZxQhMnE1Xr8mDpvs8CsD4AH5Ay04jJBszcwjpdFjqyaba3AyIkMEteerzlFGjb1OiKKFD+LJxz7ViTOuo0O03oVogyM8eVrPg0ED/0x6s/qrWMfqV9reVjpKVtVvxPVweFCCh50R3vdI="
 
 language: python
 python:
