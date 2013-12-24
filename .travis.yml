@@ -1,25 +1,22 @@
 env:
- global:
-   - "ARTIFACTS_AWS_REGION=us-east-1"
-   - "ARTIFACTS_S3_BUCKET=qubell-starter-kit-artifacts"
-   - "QUBELL_TENANT=https://express.qubell.com"
-   - "PROVIDER_TYPE=aws-ec2"
-   - "PROVIDER_REGION=us-east-1"
-   - secure: "WVpiRvdx/m1cSOsCX8QmXQ3UCHVzq9V99NXdOvzsJutF8OI3esQldsKukmHaQ8p7FM1BfPmkU8UJ+KLmiCt2U8W5R7Drn/Uy2nDO+FgL79a+B3fTSEdsb9tTq5h+ysaevoCtoVDtcXKkAkZ64LWVA+1lYX9x13YYkUpKTCBqr6w="
-   - secure: "PmerA9NTzZTpsevv3yvA2+0Ov9ZMfU76jDq6iLxVLgbAS9IoWfoiq/495cm1D10NztapPNIpm8bBvg8U6BsQjZANJOkH7uTNvPTmr2xVGdks5Bu0GIlttg2JmKRop2YOPbFj8UfYwCRSgWM/Zsik2jdoxpAGWXOWwuwx88lvAss="
-   - secure: "TnOx8OWEb5xCE4ednu1c+AJ5GuwI4O/NB6mbf2/1H/I49MxH1OwT9uVT45my4neCadBTirgXjCLxEiCEJS6xI0vZUu6Mwoa+BsSL+uWjHR0CMHl5ZbjyYSo69O6ENmQ+er6MD7gRO67E7mxjglttPP1TtPbHdapaaVwP6lkj2us="
-   - secure: "DCHKNChWO21wlslmQCy58jhLyKXsjnBRWa3p2rqqiFt/p58Ne6VgT7tyKQ2omT06+zNXYpyLbeA7GWWc9bOKLcmS5lYN4EZp3kDwi3KfrfoT5WV76ku/MaPM3pXfqzRzOrtfC/2ql3Th27UbhPuENHzKz3vez2hI2IrcFoNSwqw="
-   - secure: "YjVUSvvKiwuoenz8m+8gmQv0u9jvTAu2H89qwmyLDZNnY86Ef2/9wpftlAS31FNFEg+TW2EHPCQid7myOZ7b8bBGdViLJffM0XRr3cZSlyLATlCU/A8aR4aAddcUqUbW09yJx17lwBDVe01xWlnvO/d0Yhm4zHSicOHr/UaXTeg="
-   - secure: "LjfQgUwxem70QGVEm389AQjEHs/R/n1ZxQhMnE1Xr8mDpvs8CsD4AH5Ay04jJBszcwjpdFjqyaba3AyIkMEteerzlFGjb1OiKKFD+LJxz7ViTOuo0O03oVogyM8eVrPg0ED/0x6s/qrWMfqV9reVjpKVtVvxPVweFCCh50R3vdI="
-
+  global:
+  - ARTIFACTS_AWS_REGION=us-east-1
+  - ARTIFACTS_S3_BUCKET=qubell-starter-kit-artifacts
+  - QUBELL_TENANT=https://express.qubell.com
+  - PROVIDER_TYPE=aws-ec2
+  - PROVIDER_REGION=us-east-1
+  - secure: WVpiRvdx/m1cSOsCX8QmXQ3UCHVzq9V99NXdOvzsJutF8OI3esQldsKukmHaQ8p7FM1BfPmkU8UJ+KLmiCt2U8W5R7Drn/Uy2nDO+FgL79a+B3fTSEdsb9tTq5h+ysaevoCtoVDtcXKkAkZ64LWVA+1lYX9x13YYkUpKTCBqr6w=
+  - secure: PmerA9NTzZTpsevv3yvA2+0Ov9ZMfU76jDq6iLxVLgbAS9IoWfoiq/495cm1D10NztapPNIpm8bBvg8U6BsQjZANJOkH7uTNvPTmr2xVGdks5Bu0GIlttg2JmKRop2YOPbFj8UfYwCRSgWM/Zsik2jdoxpAGWXOWwuwx88lvAss=
+  - secure: TnOx8OWEb5xCE4ednu1c+AJ5GuwI4O/NB6mbf2/1H/I49MxH1OwT9uVT45my4neCadBTirgXjCLxEiCEJS6xI0vZUu6Mwoa+BsSL+uWjHR0CMHl5ZbjyYSo69O6ENmQ+er6MD7gRO67E7mxjglttPP1TtPbHdapaaVwP6lkj2us=
+  - secure: DCHKNChWO21wlslmQCy58jhLyKXsjnBRWa3p2rqqiFt/p58Ne6VgT7tyKQ2omT06+zNXYpyLbeA7GWWc9bOKLcmS5lYN4EZp3kDwi3KfrfoT5WV76ku/MaPM3pXfqzRzOrtfC/2ql3Th27UbhPuENHzKz3vez2hI2IrcFoNSwqw=
+  - secure: YjVUSvvKiwuoenz8m+8gmQv0u9jvTAu2H89qwmyLDZNnY86Ef2/9wpftlAS31FNFEg+TW2EHPCQid7myOZ7b8bBGdViLJffM0XRr3cZSlyLATlCU/A8aR4aAddcUqUbW09yJx17lwBDVe01xWlnvO/d0Yhm4zHSicOHr/UaXTeg=
+  - secure: LjfQgUwxem70QGVEm389AQjEHs/R/n1ZxQhMnE1Xr8mDpvs8CsD4AH5Ay04jJBszcwjpdFjqyaba3AyIkMEteerzlFGjb1OiKKFD+LJxz7ViTOuo0O03oVogyM8eVrPg0ED/0x6s/qrWMfqV9reVjpKVtVvxPVweFCCh50R3vdI=
+  - secure: eem3ewkGffX/xxSCJrHr9XXpQ61T9vxg636JCae5a1wfYT3DkfisjPHWnp4uKXUfBgLSG4PSykvtsTzg23J7jkKFz8wqEIe9rKES1XAwc/dErybdow/a/y/6iR6JHi/1Ww6X7Tq08ZrmeFC2RMqtn0YUNuyHLEAvomNlUF0vGVY=
 language: python
 python:
-  - "2.7"
-
-install: "pip install -r test/requirements.txt"
-
+- '2.7'
+install: pip install -r test/requirements.txt
 before_script:
-   - gem install travis-artifacts --no-ri --no-rdoc
-   - git submodule update --init --recursive
-
+- gem install travis-artifacts --no-ri --no-rdoc
+- git submodule update --init --recursive
 script: ./build.sh
