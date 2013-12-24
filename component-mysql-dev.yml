@@ -91,7 +91,7 @@ application:
                   parameters:
                     roles: [ default ]
                     runList: ["recipe[mysql::server]"]
-                    recipeUrl: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-c6ad1ba.tar.gz"
+                    recipeUrl: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-681efbc.tar.gz"
                     jattrs:
                       mysql:
                         server_root_password: "{$.db-root-password}"
@@ -119,7 +119,7 @@ application:
                   parameters:
                     roles: [ default ]
                     runList: [ "recipe[mysql-component::db_create]" ]
-                    recipeUrl: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-c6ad1ba.tar.gz"
+                    recipeUrl: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-681efbc.tar.gz"
                     jattrs:
                       mysql:
                         server_root_password: "{$.db-root-password}"
@@ -143,7 +143,7 @@ application:
                   parameters:
                     roles: [ default ]
                     runList: [ "recipe[mysql-component::sql_query]" ]
-                    recipeUrl: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-c6ad1ba.tar.gz"
+                    recipeUrl: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-681efbc.tar.gz"
                     jattrs:
                       mysql:
                         server_root_password: "{$.db-root-password}"
@@ -170,7 +170,7 @@ application:
                   parameters:
                     roles: [ default ]
                     runList: [ "recipe[mysql-component::user_modify]" ]
-                    recipeUrl: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-c6ad1ba.tar.gz"
+                    recipeUrl: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-681efbc.tar.gz"
                     jattrs:
                       mysql:
                         server_root_password: "{$.db-root-password}"
