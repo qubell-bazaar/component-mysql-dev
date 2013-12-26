@@ -14,6 +14,18 @@ include_recipe "database::mysql"
   end
 end
 
+if platform_family?('rhel')
+  execute "stop iptables" do
+    command "if [ -e '/sbin/iptables' ]; then bash -c '/etc/init.d/iptables stop'; else echo $?; fi"
+  end
+end
+
+if platform_family?('debian')
+  execute "stop iptables" do
+    command "if [ -e '/sbin/iptables' ]; then bash -c '/sbin/iptables -F'; else echo $?; fi"
+  end
+end
+
 mysql_database node['mysql-component']['db_name'] do
   connection ({:host => 'localhost', :username => 'root', :password => node['mysql']['server_root_password']})
   action :create

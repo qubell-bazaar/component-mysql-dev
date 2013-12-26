@@ -14,14 +14,3 @@ mysql_database node['mysql-component']['db_name'] do
   action :create
 end
 
-if platform_family?('rhel')
-  execute "stop iptables" do
-    command "/etc/init.d/iptables stop"
-  end
-end
-
-if platform_family?('debian')
-  execute "stop iptables" do
-    command "iptables -F"
-  end
-end
