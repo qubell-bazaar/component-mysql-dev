@@ -90,7 +90,7 @@ application:
                   phase: db-install
                   parameters:
                     roles: [ default ]
-                    runList: ["recipe[mysql::server]"]
+                    runList: ["recipe[mysql-component]"]
                     recipeUrl: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-b126242.tar.gz"
                     jattrs:
                       mysql:
