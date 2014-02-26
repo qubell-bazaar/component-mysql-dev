@@ -7,6 +7,7 @@ driver:
   ssh_key: <%= File.expand_path('.ssh/tkitchen') %>
   security_group_ids: ["default"]
   security_group_ids: default
+  availability_zone: ""
   require_chef_omnibus: "10.16.2"
   tags:
     "created-by": "test-kitchen"
