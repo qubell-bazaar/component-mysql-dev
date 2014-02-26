@@ -6,6 +6,16 @@
 #
 # All rights reserved - Do Not Redistribute
 #
+
+if node['platform'] == "ubuntu"
+  execute "update packages cache" do
+    command "apt-get update"
+  end
+#elsif node['platform'] == "rhel"
+#  execute "update packages cache" do
+#    command "yum --makecache"
+end
+
 include_recipe "mysql::server"
 
 if platform_family?('rhel')
