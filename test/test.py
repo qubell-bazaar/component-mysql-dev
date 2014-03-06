@@ -65,7 +65,7 @@ class MysqlTestCase(BaseComponentTestCase):
         import socket
 
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        result = sock.connect_ex((host, int(port)))
+        result = sock.connect_ex((str(host), int(port)))
 
         assert result == 0
 
@@ -80,7 +80,7 @@ class MysqlTestCase(BaseComponentTestCase):
     })
     @values({"db-port": "port", "db-host": "host"})
     def test_create_database(self, instance, host, port):
-        conn = pymysql.connect(host=host, port=port, user='test', passwd='123', db='test_component')
+        conn = pymysql.connect(host=str(host), port=int(port), user='test', passwd='123', db='test_component')
 
         cur = conn.cursor()
 
