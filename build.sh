@@ -38,7 +38,7 @@ function replace {
 
 function publish_github {
     GIT_URL=$(git config remote.origin.url)
-    NEW_GIT_URL=$(echo $GIT_URL | sed -e 's/^git:/https:/g')
+    NEW_GIT_URL=$(echo $GIT_URL | sed -e 's/^git:/https:/g' | sed -e 's/\.git$//g')
 
     git remote set-url --push origin $NEW_GIT_URL
     git remote set-branches --add origin master
