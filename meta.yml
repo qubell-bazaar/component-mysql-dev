@@ -1,5 +1,5 @@
 kit:
-  name: "Component MySQL Dev"
+  name: "MySQL 5 (Dev)"
   link: https://github.com/qubell-bazaar/component-mysql-dev 
   applications:
     - name: "Database"
