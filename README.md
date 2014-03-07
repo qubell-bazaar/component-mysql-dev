@@ -17,7 +17,7 @@ Features
 
 Configurations
 --------------
-[![Build Status](https://travis-ci.org/qubell-bazaar/component-mysql-dev.png?branch=master)](https://travis-ci.org/qubell-bazaar/component-mysql)
+[![Build Status](https://travis-ci.org/qubell-bazaar/component-mysql-dev.png?branch=master)](https://travis-ci.org/qubell-bazaar/component-mysql-dev)
 
  - MySQL 5.x (latest), CentOS 6.3 (us-east-1/ami-eb6b0182), AWS EC2 m1.small, root
  - MySQL 5.x (latest), CentOS 5.3 (us-east-1/ami-beda31d7), AWS EC2 m1.small, root
