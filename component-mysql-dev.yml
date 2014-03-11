@@ -58,7 +58,7 @@ application:
                     jcloudsIdentity: "{$.identity}"
                     jcloudsCredential: "{$.credential}"
                     vmIdentity: ubuntu
-                    imageId: us-east-1/ami-0fac7566
+                    imageId: us-east-1/ami-967edcff
                     ec2SecurityGroup: default
                   output:
                     db-host: ips
@@ -159,8 +159,3 @@ application:
                         db_user: "{$.db-user}"
                         db_pass: "{$.db-password}"
                         privileges: "{$.privileges}"
-
-          destroy:
-            steps:
-              - destroy:
-                  action: undeployEnv
