@@ -1,0 +1,83 @@
+---
+driver:
+  name: vagrant
+use_vagrant_berkshelf_plugin: true
+provisioner:
+  name: chef_solo
+
+platforms:
+  - name: ubuntu-12.04
+    driver:
+      box: ubuntu-12-x64
+      box_url: https://s3.amazonaws.com/vagrant-bx/ubuntu-12-x64.box
+  - name: ubuntu-10.04
+    driver:
+      box: ubuntu-10-x64
+      box_url: https://s3.amazonaws.com/vagrant-bx/ubuntu-10-x64.box
+  - name: centos-6.4
+    driver:
+      box: centos_6_x64
+      box_url: https://s3.amazonaws.com/vagrant-bx/centos-6-x64.box
+  - name: centos-5.6
+    driver:
+      box: centos-5-x64
+      box_url: https://s3.amazonaws.com/vagrant-bx/centos-5-x64.box
+
+suites:
+  - name: default
+    run_list:
+      - recipe[minitest-handler]
+      - recipe[mysql_component_test]
+    attributes: {mysql: { port: 3306, server_root_password: "uR1zaebah0Qu", server_repl_password: "uR1zaebah0Qu", server_debian_password: "uR1zaebah0Qu"}}
+  - name: db_create 
+    run_list:
+      - recipe[minitest-handler]
+      - recipe[mysql_component_test::db_create]
+    attributes: {
+                  mysql: {
+                    port: 3306, 
+                    server_root_password: "uR1zaebah0Qu", 
+                    server_repl_password: "uR1zaebah0Qu",
+                    server_debian_password: "uR1zaebah0Qu"
+                  },
+                  mysql-component: {
+                    db_name: "petclinic"
+                  }
+                }
+  - name: user_create 
+    run_list:
+      - recipe[minitest-handler]
+      - recipe[mysql_component_test::user_create]
+    attributes: {
+                  mysql: {
+                    port: 3306,
+                    server_root_password: "uR1zaebah0Qu", 
+                    server_repl_password: "uR1zaebah0Qu",
+                    server_debian_password: "uR1zaebah0Qu"
+                  },
+                  mysql-component: {
+                    db_name: "petclinic",
+                    db_pass: "petclinic", 
+                    db_user: "petclinic",
+                    host: ["192.168.1.1"]
+                  }
+                }
+  - name: sql_query 
+    run_list:
+      - recipe[minitest-handler]
+      - recipe[mysql_component_test::sql_query]
+    attributes: {
+                  mysql: {
+                    port: 3306,
+                    server_root_password: "uR1zaebah0Qu", 
+                    server_repl_password: "uR1zaebah0Qu",
+                    server_debian_password: "uR1zaebah0Qu"
+                  },
+                  mysql-component: {
+                    db_name: "petclinic",
+                    db_pass: "petclinic",
+                    db_user: "petclinic",
+                    host: ["192.168.1.1"],
+                    sql_url: ["https://raw.github.com/qubell-bazaar/component-petclinic/master/sql/petclinic-mysql-schema.sql", "https://raw.github.com/qubell-bazaar/component-petclinic/master/sql/petclinic-mysql-dataload.sql"]
+                  }
+                }
