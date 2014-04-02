@@ -1,7 +1,7 @@
 application:
   configuration:
-    input.db-root-password: "uR1zaebah0Qu"
     input.db-port: 3306
+    input.db-root-password: "uR1zaebah0Qu"
     input.image: "us-east-1/ami-bf5021d6"
     input.image-user: "root"
     input.instance-size: "m1.small"
@@ -37,14 +37,14 @@ application:
           instance-size: configuration(string)
           recipe-url: configuration(string)
         actions:
-          schema-management: receive-command(list<string> app-hosts, string db-user, string db-user-password, list<string> db-user-privileges => object connection)
+          schema-management: receive-command(string db-user, string db-user-password, list<string> db-user-privileges => object connection)
           db-management: receive-command(string db-name, string db-action)
           user-management: receive-command(list<string> app-hosts, string db-name, string db-user, string db-user-password, list<string> db-user-privileges, string user-action)
           file-query: receive-command(object connection, list<string> sql-url)
         result:
           dbms: publish-signal(object)
           #for ui only
-          db-port: publish-signal(string)
+          db-port: publish-signal(int)
           db-host: publish-signal(string)
 
       configuration:
@@ -85,7 +85,7 @@ application:
               db-host:
                 value: "{$.db-host[0]}"
               db-port:
-                value: "3306"
+                value: "{$.db-port}"
               dbms:
                 value:
                    db-admin-uri: "mysql://root:{$.db-root-password}@{$.db-host}:{$.db-port}"
@@ -154,8 +154,6 @@ application:
 
           schema-management:
             parameters:
-              - app-hosts:
-                  description: Allow connection from hosts
               - db-user:
                   description: DB user name
               - db-user-password:
@@ -195,7 +193,7 @@ application:
                           password: "{$.db-user-password}"
                           privileges: "{$.db-user-privileges}"
                           action: "grant"
-                        hosts: "{$.app-hosts}"
+                        hosts: ["%"]
             return:
               connection:
                 value:
@@ -208,6 +206,7 @@ application:
                   db-port: "{$.db-port}"
                   db-driver: "com.mysql.jdbc.Driver"
                   db-dstype: "javax.sql.DataSource"
+                  connection-url: "jdbc:mysql://{$.db-host}:{$.db-port}/{$.db-user}?autoReconnect=true"
                   validation-query: "select 1"
 
           file-query:

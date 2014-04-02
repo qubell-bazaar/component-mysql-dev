@@ -10,3 +10,6 @@
 [submodule "cookbooks/openssl"]
 	path = cookbooks/openssl
 	url = https://github.com/opscode-cookbooks/openssl.git
+[submodule "cookbooks/mysql_component"]
+	path = cookbooks/mysql_component
+	url = https://github.com/jollyrojer/mysql-component.git
