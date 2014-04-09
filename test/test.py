@@ -70,13 +70,14 @@ class MysqlTestCase(BaseComponentTestCase):
         assert result == 0
 
     @instance(byApplication=name)
-    @workflow("management.create-db", {"db-name": "test_component"})
-    @workflow("management.change-grants", {
+    @workflow("manage.db", {"db-name": "test_component", "db-action": "create"})
+    @workflow("manage.user", {
         "app-hosts": '["%"]',
         "db-name": "test_component",
         "db-user": "test",
-        "db-password": "123",
-        "privileges": '["ALL"]'
+        "db-user-password": "123",
+        "db-user-privileges": '["ALL"]',
+	"user-action": "grant"
     })
     @values({"db-port": "port", "db-host": "host"})
     def test_create_database(self, instance, host, port):
