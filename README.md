@@ -1,6 +1,9 @@
 MySQL
 =====
 
+Version 0.2.0
+-------------
+
 ![](http://www.mysql.com/common/logos/logo-mysql-110x57.png)
 
 Installs and configures MySQL 5.
