@@ -5,7 +5,7 @@ application:
     input.image: "us-east-1/ami-bf5021d6"
     input.image-user: "root"
     input.instance-size: "m1.small"
-    input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-90685f0.tar.gz"
+    input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-d08644e.tar.gz"
 
   interfaces:
     input:
