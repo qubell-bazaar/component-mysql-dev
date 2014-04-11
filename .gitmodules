@@ -10,3 +10,6 @@
 [submodule "cookbooks/mysql_component"]
 	path = cookbooks/mysql_component
 	url = https://github.com/jollyrojer/mysql-component.git
+[submodule "cookbooks/database"]
+	path = cookbooks/database
+	url = https://github.com/DmZ/database.git
