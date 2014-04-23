@@ -26,3 +26,4 @@ bin/*
 .kitchen.local.yml
 
 berks/
+component-mysql-dev.yml.bak
