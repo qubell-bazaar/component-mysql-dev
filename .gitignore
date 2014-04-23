@@ -7,7 +7,7 @@
 # Python files
 *.pyc
 
-
+Vagrantfile
 .vagrant
 Berksfile.lock
 *~
