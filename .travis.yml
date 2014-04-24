@@ -1,3 +1,8 @@
+language: ruby
+rvm:
+- 1.9.3
+gemfile:
+- Gemfile
 env:
   global:
   - ARTIFACTS_AWS_REGION=us-east-1
@@ -12,11 +17,11 @@ env:
   - secure: aNarYxbnoXPEAIvF8t8Z2Vc9yuCjIfflKYNDwDF8gqp53ri+54HvGdkl3F0YZYtz+quUxQaEpgxMB8vWUDl5Ia6765fKaIxt7Fv8CmPJdWLg/efUzhKPfi/R57vYwQZi+35B7YcTm0hk4zmvsdueXNtoPmVVG4yXsNE4BL0TYbY=
   - secure: XZBLbtW/qBalTXK0ebLXrAl1GEFq3NQQyGmV6hkRV4HZNaKig7MqbuQTZMX5I6u86lx/zaIB8o3hkpBUwv7/cGVP/csdWg4EjTPeuu6c0S0v4erTNIB53+UhbB62GS/1Rg5ZvfCqEehT2Rf9+aaLlY/N/Frnz0HAMkTElz7e/hQ=
   - secure: cy74oNDdX2SBoRnuub3kml7hZSZJQYwM2XssIVtCMluTmOYxqwZs1Cr6jx47HIEmdLhYgqJL/libbFptlD8xKba+KCKf3bkglLuEKBMn9EzLMOc0tBsbYNa6MhUqg+e4z96nH/3v9Q7a8V9TlV4RyfhCFqJr/mUHb0cqyxVTEiw=
-language: python
-python:
-- '2.7'
-install: pip install -r test/requirements.txt
+install: 
+- sudo apt-get -y -q install python-pip
+- sudo pip install -r test/requirements.txt
 before_script:
+- gem install --version 2.0.15 berkshelf --no-ri --no-rdoc
 - gem install --version 0.8.9 faraday --no-ri --no-rdoc
 - gem install travis-artifacts --no-ri --no-rdoc
 - git submodule update --init --recursive
