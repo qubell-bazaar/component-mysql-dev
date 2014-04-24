@@ -2,10 +2,10 @@ application:
   configuration:
     input.db-port: 3306
     input.db-root-password: "uR1zaebah0Qu"
-    input.image: "us-east-1/ami-bf5021d6"
-    input.image-user: "root"
+    input.image: "us-east-1/ami-1ba18d72"
+    input.image-user: "ec2-user"
     input.instance-size: "m1.small"
-    input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-fc59142.tar.gz"
+    input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-3ff7c2f.tar.gz"
 
   interfaces:
     input:

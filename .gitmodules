@@ -1,15 +1,3 @@
-[submodule "cookbooks/database"]
-	path = cookbooks/database
-	url = https://github.com/opscode-cookbooks/database.git
-[submodule "cookbooks/build-essential"]
-	path = cookbooks/build-essential
-	url = https://github.com/opscode-cookbooks/build-essential.git
-[submodule "cookbooks/mysql"]
-	path = cookbooks/mysql
-	url = https://github.com/opscode-cookbooks/mysql.git
-[submodule "cookbooks/openssl"]
-	path = cookbooks/openssl
-	url = https://github.com/opscode-cookbooks/openssl.git
-[submodule "cookbooks/mysql_component"]
-	path = cookbooks/mysql_component
-	url = https://github.com/jollyrojer/mysql-component.git
+[submodule "component-skeleton"]
+	path = component-skeleton
+	url = https://github.com/qubell-bazaar/component-skeleton.git
