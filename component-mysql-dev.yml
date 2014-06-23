@@ -2,19 +2,17 @@ application:
   configuration:
     input.db-port: 3306
     input.db-root-password: "uR1zaebah0Qu"
-    input.image: "us-east-1/ami-1ba18d72"
-    input.image-user: "ec2-user"
     input.instance-size: "m1.small"
     input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-657f9ff.tar.gz"
+    input.operation_system: {image: "us-east-1/ami-1ba18d72", identity: ec2-user, log_paths: ["/var/lib/mysql/*.err", "/var/log/messages"] }
 
   interfaces:
     input:
       db-port: "bind(workflow#input.db-port)"
       db-root-password: "bind(workflow#input.db-root-password)"
-      image: "bind(workflow#input.image)"
-      image-user: "bind(workflow#input.image-user)"
       instance-size: "bind(workflow#input.instance-size)"
       recipe-url: "bind(workflow#input.recipe-url)"
+      operation_system: "bind(workflow#input.operation_system)"
     manage:
       schema: "bind(workflow#actions.schema-management)"
       db: "bind(workflow#actions.db-management)"
@@ -24,16 +22,31 @@ application:
       db-host: "bind(workflow#result.db-host)"
       db-port: "bind(workflow#result.db-port)"
       dbms: "bind(workflow#result.dbms)"
+      logging-dashboard: "bind(workflow#result.logging-dashboard)"
+
+  bindings:
+    - [workflow, logger]
 
   components:
+    logger:
+      type: reference.Service
+      interfaces:
+        logger:
+          logger-server: publish-signal(string)
     workflow:
       type: workflow.Instance
       interfaces:
         input:
+          operation_system:
+             type: configuration(map<string,object>)
+             suggestions:
+                 "amazon": {image: "us-east-1/ami-1ba18d72", identity: ec2-user, log_paths: ["/var/lib/mysql/*.err", "/var/log/messages"]}
+                 "centos5": {image: "us-east-1/ami-beda31d7", identity: root, log_paths: ["/var/lib/mysql/*.err", "/var/log/messages"]}
+                 "centos": {image: "us-east-1/ami-bf5021d6", identity: root, log_paths: ["/var/lib/mysql/*.err", "/var/log/messages"]}
+                 "ubuntu1204": {image: "us-east-1/ami-967edcff", identity: ubuntu, log_paths: ["/var/log/syslog"]}
+                 "ubuntu1004": {image: "us-east-1/ami-9f3906f6", identity: ubuntu, log_paths: ["/var/log/syslog"]}
           db-port: configuration(int)
           db-root-password: configuration(string)
-          image: configuration(string)
-          image-user: configuration(string)
           instance-size: configuration(string)
           recipe-url: configuration(string)
         actions:
@@ -41,11 +54,16 @@ application:
           db-management: receive-command(string db-name, string db-action)
           user-management: receive-command(list<string> app-hosts, string db-name, string db-user, string db-user-password, list<string> db-user-privileges, string user-action)
           file-query: receive-command(object connection, list<string> sql-url)
+        logger:
+          logger-server: consume-signal(string)
         result:
           dbms: publish-signal(object)
           #for ui only
           db-port: publish-signal(int)
           db-host: publish-signal(string)
+          logging-dashboard: publish-signal(string)
+
+      required: [logger]
 
       configuration:
         configuration.workflows:  
@@ -58,18 +76,28 @@ application:
 
             steps:
               - provision-vm:
-                  action: provisionVms
+                  action: provisionVmsWithLogging
+                  phase: provision-vm
                   parameters:
                     hardwareId: "{$.instance-size}"
-                    imageId: "{$.image}"
-                    vmIdentity: "{$.image-user}"
+                    imageId: "{$.operation_system.image}"
+                    vmIdentity: "{$.operation_system.identity}"
                     roleName: default
                   output:
                     db-host: ips
+                    logging-dashboard: logging-dashboard
+
+              - enable-logging:
+                  action: registerLogPath
+                  phase: post-provision
+                  precedingPhases: [provision-vm]
+                  parameters:
+                    roles: [default]
+                    paths: "{$.operation_system.log_paths}"
 
               - install-mysql-db:
                   action: "chefsolo"
-                  precedingPhases: [ provision-vm ]
+                  precedingPhases: [ provision-vm, post-provision]
                   parameters:
                     roles: [ default ]
                     runList: ["recipe[mysql_component]"]
@@ -95,6 +123,8 @@ application:
                    db-host: "{$.db-host}"
                    db-port: "{$.db-port}"
                    db-driver: "com.mysql.jdbc.Driver"
+              logging-dashboard:
+                value: "{$.logging-dashboard}"
 
           db-management:
             parameters:
