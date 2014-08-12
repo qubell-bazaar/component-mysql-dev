@@ -1,73 +1,98 @@
+#### Mysql Server ####
+#####In this section you can set configuration parameters for Advanced Launch or which can be changed later for instance reconfiguration
 application:
   configuration:
-    input.db-port: 3306
-    input.db-root-password: "uR1zaebah0Qu"
-    input.image: "us-east-1/ami-1ba18d72"
-    input.image-user: "ec2-user"
+    input.db-port: 3306 ### Mysql listen port
+    input.db-root-password: "uR1zaebah0Qu" ### Mysql root password
+    input.operation-system: {image: "us-east-1/ami-1ba18d72", identity: ec2-user} ### used image/identity pair fordescribing Operating system.
     input.instance-size: "m1.small"
     input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-c17145a.tar.gz"
 
-  interfaces:
+####### Root Application Interfaces. Here we describe a interfaces with pins  and their bindings on  components  interfaces
+
+  interfaces: 
     input:
       db-port: "bind(workflow#input.db-port)"
       db-root-password: "bind(workflow#input.db-root-password)"
-      image: "bind(workflow#input.image)"
-      image-user: "bind(workflow#input.image-user)"
+      operation-system: "bind(workflow#input.operation-system)"
       instance-size: "bind(workflow#input.instance-size)"
       recipe-url: "bind(workflow#input.recipe-url)"
-    manage:
+    mysql: ### combined interface for actions/output pins
       schema: "bind(workflow#actions.schema-management)"
       db: "bind(workflow#actions.db-management)"
       user: "bind(workflow#actions.user-management)"
       file-query: "bind(workflow#actions.file-query)"
-    output:
       db-host: "bind(workflow#result.db-host)"
       db-port: "bind(workflow#result.db-port)"
       dbms: "bind(workflow#result.dbms)"
 
+####### Components definitions ########
+
   components:
+ #### Single component workflow
     workflow:
-      type: workflow.Instance
+      type: workflow.Instance ### http://docs.qubell.com/developer/workflow-instance.html
       interfaces:
         input:
-          db-port: configuration(int)
-          db-root-password: configuration(string)
-          image: configuration(string)
-          image-user: configuration(string)
-          instance-size: configuration(string)
-          recipe-url: configuration(string)
+          operation-system:
+             type: configuration(map<string,object>)
+             suggestions: ### Create dropdown menu in advanced launch
+                 "centos": {image: "us-east-1/ami-bf5021d6", identity: root}
+                 "amazon": {image: "us-east-1/ami-1ba18d72", identity: ec2-user}
+                 "ubuntu1204": {image: "us-east-1/ami-967edcff", identity: ubuntu}
+                 "ubuntu1004": {image: "us-east-1/ami-9f3906f6", identity: ubuntu}
+          db-port:
+             type: configuration(int)
+             name: Database listen port
+          db-root-password:
+             type: configuration(string)
+             name: Database root password
+          instance-size:
+             type: configuration(string)
+             name: VM size m1.small for example
+          recipe-url:
+             type: configuration(string)
+             name: Cookbooks  url
         actions:
-          schema-management: receive-command(string db-user, string db-user-password, list<string> db-user-privileges => object connection)
-          db-management: receive-command(string db-name, string db-action)
-          user-management: receive-command(list<string> app-hosts, string db-name, string db-user, string db-user-password, list<string> db-user-privileges, string user-action)
-          file-query: receive-command(object connection, list<string> sql-url)
+          schema-management:
+             type: receive-command(string db-user, string db-user-password, list<string> db-user-privileges => object connection)
+             name: Manage Schema
+          db-management:
+             type: receive-command(string db-name, string db-action)
+             name: Database Management
+          user-management:
+             type: receive-command(list<string> app-hosts, string db-name, string db-user, string db-user-password, list<string> db-user-privileges, string user-action)
+             name: User Management
+          file-query:
+             type: receive-command(object connection, list<string> sql-url)
+             name: Run Sql Query
         result:
-          dbms: publish-signal(object)
+          dbms:
+             type: publish-signal(object)
+             name: Database Parameters
           #for ui only
-          db-port: publish-signal(int)
-          db-host: publish-signal(string)
+          db-port:
+             type: publish-signal(int)
+             name: Database listen port
+          db-host:
+             type: publish-signal(string)
+             name: Database Host 
 
       configuration:
         configuration.workflows:  
-          launch:
-            parameters:
-              - db-port:
-                  description: MySQL Server version   
-              - db-root-password:
-                  description: Root Password
-
+          launch: ###  Launch workflow used for provision/install phase
             steps:
-              - provision-vm:
+              - provision-vm: ### Action "provisionAmazonVm" provision vm on Amazon EC2 and return  ips list
                   action: provisionVms
                   parameters:
                     hardwareId: "{$.instance-size}"
-                    imageId: "{$.image}"
-                    vmIdentity: "{$.image-user}"
+                    imageId: "{$.operation-system.image}"
+                    vmIdentity: "{$.$.operation-system.identity}"
                     roleName: default
-                  output:
+                  output: ### Step output values will be used in workflow return section below
                     db-host: ips
 
-              - install-mysql-db:
+              - install-mysql-db: ### Action "chefsolo" search cookbooks archive by  specified recipeUrl and run recipe descrbed in runList with provided attributes
                   action: "chefsolo"
                   precedingPhases: [ provision-vm ]
                   parameters:
@@ -81,7 +106,7 @@ application:
                         server_debian_password: "{$.db-root-password}"
                         port: "{$.db-port}"
 
-            return:
+            return: ### This values we want to see on application dashboard
               db-host:
                 value: "{$.db-host[0]}"
               db-port:
@@ -96,12 +121,7 @@ application:
                    db-port: "{$.db-port}"
                    db-driver: "com.mysql.jdbc.Driver"
 
-          db-management:
-            parameters:
-              - db-name:
-                  description: DB name
-              - db-action:
-                  description: What to do with DB (create, drop)
+          db-management: ### Additional workflow for Database management
             steps:
               - manage-db:
                   action: "chefsolo"
@@ -118,20 +138,7 @@ application:
                           dbname: "{$.db-name}"
                           db_action: "{$.db-action}"
 
-          user-management:
-            parameters:
-              - app-hosts:
-                  description: Allow connection from hosts (list)
-              - db-name:
-                  description: DB name
-              - db-user:
-                  description: DB user name
-              - db-user-password:
-                  description: DB user password
-              - db-user-privileges:
-                  description: DB user privileges
-              - user-action:
-                  description: What to do with user (create, grant, drop)
+          user-management: ### Additional workflow for User management
             steps:
               - manage-user:
                   action: "chefsolo"
@@ -152,14 +159,7 @@ application:
                           action: "{$.user-action}"
                         hosts: "{$.app-hosts}"
 
-          schema-management:
-            parameters:
-              - db-user:
-                  description: DB user name
-              - db-user-password:
-                  description: DB user password
-              - db-user-privileges:
-                  description: DB user privileges
+          schema-management: ### Additional workflow for Schema management
             steps:
               - create-db:
                   action: "chefsolo"
@@ -209,12 +209,7 @@ application:
                   connection-url: "jdbc:mysql://{$.db-host}:{$.db-port}/{$.db-user}?autoReconnect=true"
                   validation-query: "select 1"
 
-          file-query:
-            parameters:
-              - connection:
-                  description: Connection info object
-              - sql-url:
-                  description: SQL query urls (["url1", "url2"])
+          file-query: ### Additional workflow for run Sql Query
             steps:
               - run-file-query:
                   action: "chefsolo"
