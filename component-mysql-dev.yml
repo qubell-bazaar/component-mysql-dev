@@ -6,7 +6,7 @@ application:
     input.db-root-password: "uR1zaebah0Qu" ### Mysql root password
     input.operation-system: {image: "us-east-1/ami-1ba18d72", identity: ec2-user} ### used image/identity pair fordescribing Operating system.
     input.instance-size: "m1.small"
-    input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-c17145a.tar.gz"
+    input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-c78020b.tar.gz"
 
 ####### Root Application Interfaces. Here we describe a interfaces with pins  and their bindings on  components  interfaces
 
