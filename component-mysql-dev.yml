@@ -4,7 +4,7 @@ application:
   configuration:
     input.db-port: 3306 ### Mysql listen port
     input.db-root-password: "uR1zaebah0Qu" ### Mysql root password
-    input.operation-system: {image: "us-east-1/ami-1ba18d72", identity: ec2-user} ### used image/identity pair fordescribing Operating system.
+    input.operating-system: {image: "us-east-1/ami-1ba18d72", identity: ec2-user} ### used image/identity pair for describing Operating system.
     input.instance-size: "m1.small"
     input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-c78020b.tar.gz"
 
@@ -14,7 +14,7 @@ application:
     input:
       db-port: "bind(workflow#input.db-port)"
       db-root-password: "bind(workflow#input.db-root-password)"
-      operation-system: "bind(workflow#input.operation-system)"
+      operating-system: "bind(workflow#input.operating-system)"
       instance-size: "bind(workflow#input.instance-size)"
       recipe-url: "bind(workflow#input.recipe-url)"
     mysql: ### combined interface for actions/output pins
@@ -34,7 +34,7 @@ application:
       type: workflow.Instance ### http://docs.qubell.com/developer/workflow-instance.html
       interfaces:
         input:
-          operation-system:
+          operating-system:
              type: configuration(map<string,object>)
              suggestions: ### Create dropdown menu in advanced launch
                  "centos": {image: "us-east-1/ami-bf5021d6", identity: root}
@@ -86,8 +86,8 @@ application:
                   action: provisionVms
                   parameters:
                     hardwareId: "{$.instance-size}"
-                    imageId: "{$.operation-system.image}"
-                    vmIdentity: "{$.$.operation-system.identity}"
+                    imageId: "{$.operating-system.image}"
+                    vmIdentity: "{$.$.operating-system.identity}"
                     roleName: default
                   output: ### Step output values will be used in workflow return section below
                     db-host: ips
