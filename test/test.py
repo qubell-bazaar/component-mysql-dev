@@ -70,8 +70,8 @@ class MysqlTestCase(BaseComponentTestCase):
         assert result == 0
 
     @instance(byApplication=name)
-    @workflow("manage.db", {"db-name": "test_component", "db-action": "create"})
-    @workflow("manage.user", {
+    @workflow("mysql.db", {"db-name": "test_component", "db-action": "create"})
+    @workflow("mysql.user", {
         "app-hosts": '["%"]',
         "db-name": "test_component",
         "db-user": "test",
