@@ -7,7 +7,7 @@ application:
     input.db-port: 3306 # Mysql listen port
     input.db-root-password: "uR1zaebah0Qu" # Mysql root password
     input.operating-system: {image: "us-east-1/ami-1ba18d72", identity: ec2-user} # used image/identity pair for describing Operating system.
-    input.instance-size: "t2.small"
+    input.instance-size: "m1.small" # EC2 instance type
     input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-c78020b.tar.gz"
 
 # Application Interfaces binding section.
