@@ -1,23 +1,26 @@
-#### Mysql Server ####
-#####In this section you can set configuration parameters for Advanced Launch or which can be changed later for instance reconfiguration
+# Mysql Server #
+# Input Configuration parameters.
+# In this section you can set input configuration parameters which you
+# will be able to change later in reconfiguration
 application:
   configuration:
-    input.db-port: 3306 ### Mysql listen port
-    input.db-root-password: "uR1zaebah0Qu" ### Mysql root password
-    input.operating-system: {image: "us-east-1/ami-1ba18d72", identity: ec2-user} ### used image/identity pair for describing Operating system.
-    input.instance-size: "m1.small"
+    input.db-port: 3306 # Mysql listen port
+    input.db-root-password: "uR1zaebah0Qu" # Mysql root password
+    input.operating-system: {image: "us-east-1/ami-1ba18d72", identity: ec2-user} # used image/identity pair for describing Operating system.
+    input.instance-size: "t2.small"
     input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-c78020b.tar.gz"
 
-####### Root Application Interfaces. Here we describe a interfaces with pins  and their bindings on  components  interfaces
-
+# Application Interfaces binding section.
+# Here we describe a interfaces with pins  and their bindings on  component's  interfaces.
+# For binding using function bind(Component1#interface.pin, Component2#interface.pin)
   interfaces: 
-    input:
+    input: # Contain pins with type: configuration()
       db-port: "bind(workflow#input.db-port)"
       db-root-password: "bind(workflow#input.db-root-password)"
       operating-system: "bind(workflow#input.operating-system)"
       instance-size: "bind(workflow#input.instance-size)"
       recipe-url: "bind(workflow#input.recipe-url)"
-    mysql: ### combined interface for actions/output pins
+    mysql: # combined interface for actions/output pins
       schema: "bind(workflow#actions.schema-management)"
       db: "bind(workflow#actions.db-management)"
       user: "bind(workflow#actions.user-management)"
@@ -26,17 +29,17 @@ application:
       db-port: "bind(workflow#result.db-port)"
       dbms: "bind(workflow#result.dbms)"
 
-####### Components definitions ########
+## Components definitions ##
 
   components:
- #### Single component workflow
+ # Component workflow
     workflow:
-      type: workflow.Instance ### http://docs.qubell.com/developer/workflow-instance.html
+      type: workflow.Instance
       interfaces:
         input:
           operating-system:
              type: configuration(map<string,object>)
-             suggestions: ### Create dropdown menu in advanced launch
+             suggestions: # Create dropdown menu in advanced launch
                  "centos": {image: "us-east-1/ami-bf5021d6", identity: root}
                  "amazon": {image: "us-east-1/ami-1ba18d72", identity: ec2-user}
                  "ubuntu1204": {image: "us-east-1/ami-967edcff", identity: ubuntu}
@@ -80,19 +83,19 @@ application:
 
       configuration:
         configuration.workflows:  
-          launch: ###  Launch workflow used for provision/install phase
+          launch: #  Launch workflow used for provision/install phase
             steps:
-              - provision-vm: ### Action "provisionAmazonVm" provision vm on Amazon EC2 and return  ips list
+              - provision-vm: # Action "provisionAmazonVm" provision vm on Amazon EC2 and return  ips list
                   action: provisionVms
                   parameters:
                     hardwareId: "{$.instance-size}"
                     imageId: "{$.operating-system.image}"
                     vmIdentity: "{$.$.operating-system.identity}"
                     roleName: default
-                  output: ### Step output values will be used in workflow return section below
+                  output: # Step output values will be used in workflow return section below
                     db-host: ips
 
-              - install-mysql-db: ### Action "chefsolo" search cookbooks archive by  specified recipeUrl and run recipe descrbed in runList with provided attributes
+              - install-mysql-db: # Action "chefsolo" search cookbooks archive by  specified recipeUrl and run recipe descrbed in runList with provided attributes
                   action: "chefsolo"
                   precedingPhases: [ provision-vm ]
                   parameters:
@@ -106,7 +109,7 @@ application:
                         server_debian_password: "{$.db-root-password}"
                         port: "{$.db-port}"
 
-            return: ### This values we want to see on application dashboard
+            return: # This values we want to see on application dashboard
               db-host:
                 value: "{$.db-host[0]}"
               db-port:
@@ -121,7 +124,7 @@ application:
                    db-port: "{$.db-port}"
                    db-driver: "com.mysql.jdbc.Driver"
 
-          db-management: ### Additional workflow for Database management
+          db-management: # Additional workflow for Database management
             steps:
               - manage-db:
                   action: "chefsolo"
@@ -138,7 +141,7 @@ application:
                           dbname: "{$.db-name}"
                           db_action: "{$.db-action}"
 
-          user-management: ### Additional workflow for User management
+          user-management: # Additional workflow for User management
             steps:
               - manage-user:
                   action: "chefsolo"
@@ -159,7 +162,7 @@ application:
                           action: "{$.user-action}"
                         hosts: "{$.app-hosts}"
 
-          schema-management: ### Additional workflow for Schema management
+          schema-management: # Additional workflow for Schema management
             steps:
               - create-db:
                   action: "chefsolo"
@@ -209,7 +212,7 @@ application:
                   connection-url: "jdbc:mysql://{$.db-host}:{$.db-port}/{$.db-user}?autoReconnect=true"
                   validation-query: "select 1"
 
-          file-query: ### Additional workflow for run Sql Query
+          file-query: # Additional workflow for run Sql Query
             steps:
               - run-file-query:
                   action: "chefsolo"

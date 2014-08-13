@@ -3,7 +3,7 @@ kit:
   link: https://github.com/qubell-bazaar/component-mysql-dev 
   applications:
     - name: "Database"
-      manifest: https://raw.github.com/qubell-bazaar/component-mysql-dev/master/component-mysql-dev.yml
+      manifest: https://raw.github.com/qubell-bazaar/component-mysql-dev/0.3.0/component-mysql-dev.yml
   provider:
     name: "Qubell"
     link: http://qubell.com
