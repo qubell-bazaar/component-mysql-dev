@@ -1,7 +1,7 @@
 MySQL
 =====
 
-Version 0.3.0
+Version 1.0-33p
 -------------
 
 ![](http://www.mysql.com/common/logos/logo-mysql-110x57.png)
