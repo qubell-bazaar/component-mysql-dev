@@ -1,14 +1,14 @@
 MySQL
 =====
 
-Version 0.2.0
+Version 0.3.0
 -------------
 
 ![](http://www.mysql.com/common/logos/logo-mysql-110x57.png)
 
 Installs and configures MySQL 5.
 
-[![Install](https://raw.github.com/qubell-bazaar/component-skeleton/master/img/install.png)](https://express.qubell.com/applications/upload?metadataUrl=https://github.com/qubell-bazaar/component-mysql/raw/master/meta.yml)
+[![Install](https://raw.github.com/qubell-bazaar/component-skeleton/master/img/install.png)](https://express.qubell.com/applications/upload?metadataUrl=https://raw.github.com/qubell-bazaar/component-mysql/0.3.0/meta.yml)
 
 Features
 --------
