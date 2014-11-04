@@ -20,6 +20,8 @@ application:
       operating-system: "bind(workflow#input.operating-system)"
       instance-size: "bind(workflow#input.instance-size)"
       recipe-url: "bind(workflow#input.recipe-url)"
+    app-meta:
+      application-pic: "bind(metadata#output.application-pic)"
     mysql: # combined interface for actions/output pins
       schema: "bind(workflow#actions.schema-management)"
       db: "bind(workflow#actions.db-management)"
@@ -32,6 +34,19 @@ application:
 ## Components definitions ##
 
   components:
+    metadata:
+      type: cobalt.common.Constants
+      interfaces:
+        output:
+          application-pic:
+            type: publish-signal(map<string, object>)
+            name: ""
+      configuration:
+        configuration.values:
+          output.application-pic:
+            large: "https://s3.amazonaws.com/qubell-images/mysql.png"
+            small: "https://s3.amazonaws.com/qubell-images/mysql.png"
+            small-height: 57
  # Component workflow
     workflow:
       type: workflow.Instance
@@ -59,27 +74,27 @@ application:
         actions:
           schema-management:
              type: receive-command(string db-user, string db-user-password, list<string> db-user-privileges => object connection)
-             name: Manage Schema
+             name: Manage schema
           db-management:
              type: receive-command(string db-name, string db-action)
-             name: Database Management
+             name: Manage data
           user-management:
              type: receive-command(list<string> app-hosts, string db-name, string db-user, string db-user-password, list<string> db-user-privileges, string user-action)
-             name: User Management
+             name: User management
           file-query:
              type: receive-command(object connection, list<string> sql-url)
-             name: Run Sql Query
+             name: Run a SQL query
         result:
           dbms:
              type: publish-signal(object)
-             name: Database Parameters
+             name: Database parameters
           #for ui only
           db-port:
              type: publish-signal(int)
-             name: Database listen port
+             name: Database port
           db-host:
              type: publish-signal(string)
-             name: Database Host 
+             name: Database host 
 
       configuration:
         configuration.workflows:  
