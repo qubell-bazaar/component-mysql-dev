@@ -25,5 +25,7 @@ bin/*
 .kitchen/
 .kitchen.local.yml
 
+.lime-env/
+report.xml
 berks/
 component-mysql-dev.yml.bak
