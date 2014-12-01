@@ -1,6 +1,8 @@
 simplejson
 pyaml
 requests
-qubell-api-python-client
-
 PyMySQL
+PyYAML
+testtools
+nose
+nose_xunitmp
