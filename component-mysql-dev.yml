@@ -1,120 +1,135 @@
-# Mysql Server #
-# Input Configuration parameters.
-# In this section you can set input configuration parameters which you
-# will be able to change later in reconfiguration
+# MySQL Server
 application:
   configuration:
-    input.db-port: 3306 # Mysql listen port
-    input.db-root-password: "uR1zaebah0Qu" # Mysql root password
-    input.operating-system: {image: "us-east-1/ami-1ba18d72", identity: ec2-user} # used image/identity pair for describing Operating system.
-    input.instance-size: "m1.small" # EC2 instance type
-    input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-5c97bb8.tar.gz"
-
-# Application Interfaces binding section.
-# Here we describe a interfaces with pins  and their bindings on  component's  interfaces.
-# For binding using function bind(Component1#interface.pin, Component2#interface.pin)
+    configuration.db-port: 3306
+    configuration.db-root-password: "uR1zaebah0Qu"
+    configuration.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-9b6eef5.tar.gz"
+    compute.hardwareId: "c3.large"
+    compute.imageId:    "ami-246ed34c"
+    compute.login:      "ec2-user"
+    compute.locationId: "us-east-1"
   interfaces: 
-    input: # Contain pins with type: configuration()
-      db-port: "bind(workflow#input.db-port)"
-      db-root-password: "bind(workflow#input.db-root-password)"
-      operating-system: "bind(workflow#input.operating-system)"
-      instance-size: "bind(workflow#input.instance-size)"
-      recipe-url: "bind(workflow#input.recipe-url)"
-    app-meta:
-      application-pic: "bind(metadata#output.application-pic)"
-    mysql: # combined interface for actions/output pins
+    configuration:
+      "*": "bind(workflow#input.*)"
+    compute:
+      hardwareId: "bind(compute#configuration.hardwareId)"
+      imageId:    "bind(compute#configuration.imageId)"
+      login:      "bind(compute#configuration.login)"
+      locationId: "bind(compute#configuration.locationId)"
+    database:
       schema: "bind(workflow#actions.schema-management)"
       db: "bind(workflow#actions.db-management)"
       user: "bind(workflow#actions.user-management)"
       file-query: "bind(workflow#actions.file-query)"
-      db-host: "bind(workflow#result.db-host)"
-      db-port: "bind(workflow#result.db-port)"
-      dbms: "bind(workflow#result.dbms)"
-
-## Components definitions ##
-
+      "*": "bind(workflow#result.*)"
   components:
-    metadata:
-      type: cobalt.common.Constants
-      interfaces:
-        output:
-          application-pic:
-            type: publish-signal(map<string, object>)
-            name: ""
-      configuration:
-        configuration.values:
-          output.application-pic:
-            large: "https://s3.amazonaws.com/qubell-images/mysql.png"
-            small: "https://s3.amazonaws.com/qubell-images/mysql.png"
-            small-height: 57
- # Component workflow
     workflow:
       type: workflow.Instance
       interfaces:
         input:
-          operating-system:
-             type: configuration(map<string,object>)
-             suggestions: # Create dropdown menu in advanced launch
-                 "centos": {image: "us-east-1/ami-bf5021d6", identity: root}
-                 "amazon": {image: "us-east-1/ami-1ba18d72", identity: ec2-user}
-                 "ubuntu1204": {image: "us-east-1/ami-967edcff", identity: ubuntu}
-                 "ubuntu1004": {image: "us-east-1/ami-9f3906f6", identity: ubuntu}
-          db-port:
-             type: configuration(int)
-             name: Database listen port
-          db-root-password:
-             type: configuration(string)
-             name: Database root password
-          instance-size:
-             type: configuration(string)
-             name: VM size m1.small for example
-          recipe-url:
-             type: configuration(string)
-             name: Cookbooks  url
+          db-port:            { type: configuration(int),          name: Database listen port     }
+          db-root-password:   { type: configuration(string),       name: Database root password   }
+          db-user:            { type: configuration(string),       name: Database user name       }
+          db-user-password:   { type: configuration(string),       name: Database user password   }
+          db-user-privileges: { type: configuration(list<string>), name: Database user privileges }
+          recipe-url:         { type: configuration(string),       name: Cookbooks url            }
+          sql-url:            { type: configuration(list<string>), name: Schema SQL urls          }
+        compute:
+          networks:        consume-signal(map<string, map<string, string>>)
+          exec:            send-command(string command, int timeout => string stdOut, string stdErr => string stdOut, string stdErr, int exitCode)
+          put-file:        send-command(string filename, bytes payload)
+          get-file:        send-command(string filename => bytes payload)
         actions:
           schema-management:
              type: receive-command(string db-user, string db-user-password, list<string> db-user-privileges => object connection)
              name: Manage schema
+          file-query:
+             type: receive-command(object connection, list<string> sql-url)
+             name: Run a SQL query
           db-management:
              type: receive-command(string db-name, string db-action)
              name: Manage data
           user-management:
              type: receive-command(list<string> app-hosts, string db-name, string db-user, string db-user-password, list<string> db-user-privileges, string user-action)
              name: User management
-          file-query:
-             type: receive-command(object connection, list<string> sql-url)
-             name: Run a SQL query
         result:
-          dbms:
-             type: publish-signal(object)
-             name: Database parameters
-          #for ui only
-          db-port:
-             type: publish-signal(int)
-             name: Database port
-          db-host:
-             type: publish-signal(string)
-             name: Database host 
-
+          db-host:             { type: publish-signal(string), name: Database host          }
+          db-port:             { type: publish-signal(int),    name: Database listen port   }
+          db-root-user:        { type: publish-signal(string), name: Database root user     }
+          db-root-password:    { type: publish-signal(string), name: Database root password }
+          db-user:             { type: publish-signal(string), name: Database user          }
+          db-user-password:    { type: publish-signal(string), name: Database user password }
+          db-driver:           { type: publish-signal(string), name: JDBC driver            }
+          db-validation-query: { type: publish-signal(string), name: Validation SQL query   }
+          db-connection-url:   { type: publish-signal(string), name: JDBC url               }
+      required: [ compute ]
       configuration:
+        configuration.triggers:
+          input.db-port:            update
+          input.db-root-password:   update
+          input.db-user:            update
+          input.db-user-password:   update
+          input.db-user-privileges: update
+          input.recipe-url:         update
+          compute.networks:         update
+        configuration.propagateStatus: [ update ]
         configuration.workflows:  
-          launch: #  Launch workflow used for provision/install phase
+          launch:
             steps:
-              - provision-vm: # Action "provisionAmazonVm" provision vm on Amazon EC2 and return  ips list
-                  action: provisionVms
+              - update:
+                  action: update
                   parameters:
-                    hardwareId: "{$.instance-size}"
-                    imageId: "{$.operating-system.image}"
-                    vmIdentity: "{$.$.operating-system.identity}"
-                    roleName: default
-                  output: # Step output values will be used in workflow return section below
-                    db-host: ips
-
-              - install-mysql-db: # Action "chefsolo" search cookbooks archive by  specified recipeUrl and run recipe descrbed in runList with provided attributes
+                    db-root-password: "{$.db-root-password}"
+                    db-port: "{$.db-port}"
+                    recipe-url: "{$.recipe-url}"
+                    db-user: "{$.db-user}"
+                    db-user-password: "{$.db-user-password}"
+                    db-user-privileges: "{$.db-user-privileges}"
+                  output:
+                    db-host:             db-host
+                    db-port:             db-port
+                    dbms:                dbms
+                    connection:          connection
+              - run-sql:
+                  action: file-query
+                  precedingPhases: [ update ]
+                  parameters:
+                    connection: "{$.connection}"
+                    sql-url: "{$.sql-url}"
+            return:
+              db-host:             { value: "{$.db-host}"                     }
+              db-port:             { value: "{$.db-port}"                     }
+              db-root-user:        { value: "{$.dbms.db-root-user}"           }
+              db-root-password:    { value: "{$.dbms.db-root-password}"       }
+              db-user:             { value: "{$.connection.db-user}"          }
+              db-user-password:    { value: "{$.connection.db-user-password}" }
+              db-driver:           { value: "{$.connection.db-driver}"        }
+              db-validation-query: { value: "{$.connection.validation-query}" }
+              db-connection-url:   { value: "{$.connection.connection-url}"   }
+          update:
+            parameters:
+              - db-root-password:
+                  description: Oracle-DB admin password
+              - db-port:
+                  description: Oracle-DB listener port
+              - recipe-url:
+                  description: Chefsolo recipe URL
+              - db-user:
+                  description: DB user name
+              - db-user-password:
+                  description: DB user password
+              - db-user-privileges:
+                  description: DB user privileges
+            steps:
+              - get-signals:
+                  action: getSignals
+                  output:
+                    signals: result
+              - install-mysql-db:
                   action: "chefsolo"
-                  precedingPhases: [ provision-vm ]
+                  precedingPhases: [ get-signals ]
                   parameters:
-                    roles: [ default ]
+                    roles: [compute]
                     runList: ["recipe[mysql_component]"]
                     recipeUrl: "{$.recipe-url}"
                     jattrs:
@@ -123,22 +138,25 @@ application:
                         server_repl_password: "{$.db-root-password}"
                         server_debian_password: "{$.db-root-password}"
                         port: "{$.db-port}"
-
-            return: # This values we want to see on application dashboard
-              db-host:
-                value: "{$.db-host[0]}"
-              db-port:
-                value: "{$.db-port}"
+              - create-schema:
+                  action: schema-management
+                  precedingPhases: [ install-mysql-db ]
+                  parameters:
+                    db-user: "{$.db-user}"
+                    db-user-password: "{$.db-user-password}"
+                    db-user-privileges: "{$.db-user-privileges}"
+                  output:
+                    connection: connection
+            return:
+              db-host:             { value: "{$.signals.compute.networks.public.ip}" }
+              db-port:             { value: "{$.db-port}" }
               dbms:
                 value:
-                   db-admin-uri: "mysql://root:{$.db-root-password}@{$.db-host}:{$.db-port}"
-                   db-type: "mysql"
-                   db-root-user: "root"
-                   db-root-password: "{$.db-root-password}"
-                   db-host: "{$.db-host}"
-                   db-port: "{$.db-port}"
-                   db-driver: "com.mysql.jdbc.Driver"
-
+                  db-admin-uri:     "mysql://root:{$.db-root-password}@{$.db-host}:{$.db-port}"
+                  db-root-user:     "root"
+                  db-root-password: "{$.db-root-password}"
+              connection:          { value: "{$.connection}" }
+              
           db-management: # Additional workflow for Database management
             steps:
               - manage-db:
@@ -178,11 +196,23 @@ application:
                         hosts: "{$.app-hosts}"
 
           schema-management: # Additional workflow for Schema management
+            parameters:
+              - db-user:
+                  description: DB user name
+              - db-user-password:
+                  description: DB user password
+              - db-user-privileges:
+                  description: DB user privileges
             steps:
+              - get-signals:
+                  action: getSignals
+                  output:
+                    signals: result
               - create-db:
                   action: "chefsolo"
+                  precedingPhases: [ get-signals ]
                   parameters:
-                    roles: [ default ]
+                    roles: [compute]
                     runList: [ "recipe[mysql_component::db_manage]" ]
                     recipeUrl: "{$.recipe-url}"
                     jattrs:
@@ -197,7 +227,7 @@ application:
                   action: "chefsolo"
                   precedingPhases: [ create-db ]
                   parameters:
-                    roles: [ default ]
+                    roles: [compute]
                     runList: [ "recipe[mysql_component::user_manage]" ]
                     recipeUrl: "{$.recipe-url}"
                     jattrs:
@@ -215,24 +245,31 @@ application:
             return:
               connection:
                 value:
-                  db-user-uri: "mysql://{$.db-user}:{$.db-user-password}@{$.db-host}:{$.db-port}/{$.db-user}"
+                  db-user-uri: "mysql://{$.db-user}:{$.db-user-password}@{$.signals.compute.networks.public.ip}:{$.db-port}/{$.db-user}"
                   db-type: "mysql"
                   db-name: "{$.db-user}"
                   db-user: "{$.db-user}"
                   db-user-password: "{$.db-user-password}"
-                  db-host: "{$.db-host}"
+                  db-host: "{$.signals.compute.networks.public.ip}"
                   db-port: "{$.db-port}"
                   db-driver: "com.mysql.jdbc.Driver"
                   db-dstype: "javax.sql.DataSource"
-                  connection-url: "jdbc:mysql://{$.db-host}:{$.db-port}/{$.db-user}?autoReconnect=true"
+                  connection-url: "jdbc:mysql://{$.signals.compute.networks.public.ip}:{$.db-port}/{$.db-user}?autoReconnect=true"
                   validation-query: "select 1"
 
           file-query: # Additional workflow for run Sql Query
+            parameters:
+              - sql-url:
+                  description: URL to Oracle sql files # file must have
+                  # 1st line - WHENEVER SQLERROR EXIT SQL.SQLCODE
+                  # last line - exit;
+              - connection:
+                  description: Connection info
             steps:
               - run-file-query:
                   action: "chefsolo"
                   parameters:
-                    roles: [ default ]
+                    roles: [compute]
                     runList: [ "recipe[mysql_component::file_query]" ]
                     recipeUrl: "{$.recipe-url}"
                     jattrs:
@@ -244,3 +281,8 @@ application:
                           username: "{$.connection.db-user}"
                           password: "{$.connection.db-user-password}"
                         sql_url: "{$.sql-url}"
+
+    compute:
+      type: compute.Instance
+  bindings:
+   - [workflow#compute, compute]
