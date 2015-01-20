@@ -54,29 +54,32 @@ class MysqlTestCase(BaseComponentTestCase):
     name = "component-mysql-dev"
     apps = [{
         "name": name,
-        "parameters": {"configuration.db-user": "test", "configuration.db-user-password": "123", "configuration.sql-url": '[]', "configuration.db-user-privileges": '["ALL"]'}, 
         "file": os.path.realpath(os.path.join(os.path.dirname(__file__), '../%s.yml' % name))
     }]
-   
-    @classmethod
-    def timeout(cls):
-        return 30
 
     @instance(byApplication=name)
-    def test_port(self, instance):
+    @values({"db-port": "port", "db-host": "host"})
+    def test_port(self, instance, host, port):
         import socket
-        host = instance.returnValues['database.db-host']
-        port = instance.returnValues['database.db-port']
+
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex((str(host), int(port)))
 
         assert result == 0
 
     @instance(byApplication=name)
-    def test_create_database(self, instance):
-        host = instance.returnValues['database.db-host']
-        port = instance.returnValues['database.db-port']
-        conn = pymysql.connect(host=str(host), port=int(port), user='test', passwd='123', db='test')
+    @workflow("database.db", {"db-name": "test_component", "db-action": "create"})
+    @workflow("database.user", {
+        "app-hosts": '["%"]',
+        "db-name": "test_component",
+        "db-user": "test",
+        "db-user-password": "123",
+        "db-user-privileges": '["ALL"]',
+	"user-action": "grant"
+    })
+    @values({"db-port": "port", "db-host": "host"})
+    def test_create_database(self, instance, host, port):
+        conn = pymysql.connect(host=str(host), port=int(port), user='test', passwd='123', db='test_component')
 
         cur = conn.cursor()
 
