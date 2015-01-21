@@ -29,11 +29,7 @@ application:
         input:
           db-port:            { type: configuration(int),          name: Database listen port     }
           db-root-password:   { type: configuration(string),       name: Database root password   }
-          db-user:            { type: configuration(string),       name: Database user name       }
-          db-user-password:   { type: configuration(string),       name: Database user password   }
-          db-user-privileges: { type: configuration(list<string>), name: Database user privileges }
           recipe-url:         { type: configuration(string),       name: Cookbooks url            }
-          sql-url:            { type: configuration(list<string>), name: Schema SQL urls          }
         compute:
           networks:        consume-signal(map<string, map<string, string>>)
           exec:            send-command(string command, int timeout => string stdOut, string stdErr => string stdOut, string stdErr, int exitCode)
@@ -53,73 +49,20 @@ application:
              type: receive-command(list<string> app-hosts, string db-name, string db-user, string db-user-password, list<string> db-user-privileges, string user-action)
              name: User management
         result:
-          db-host:             { type: publish-signal(string), name: Database host          }
-          db-port:             { type: publish-signal(int),    name: Database listen port   }
-          db-root-user:        { type: publish-signal(string), name: Database root user     }
-          db-root-password:    { type: publish-signal(string), name: Database root password }
-          db-user:             { type: publish-signal(string), name: Database user          }
-          db-user-password:    { type: publish-signal(string), name: Database user password }
-          db-driver:           { type: publish-signal(string), name: JDBC driver            }
-          db-validation-query: { type: publish-signal(string), name: Validation SQL query   }
-          db-connection-url:   { type: publish-signal(string), name: JDBC url               }
+          dbms:
+             type: publish-signal(object)
+             name: Database parameters
+          #for ui only
+          db-port:
+             type: publish-signal(int)
+             name: Database port
+          db-host:
+             type: publish-signal(string)
+             name: Database host
       required: [ compute ]
       configuration:
-        configuration.triggers:
-          input.db-port:            update
-          input.db-root-password:   update
-          input.db-user:            update
-          input.db-user-password:   update
-          input.db-user-privileges: update
-          input.recipe-url:         update
-          compute.networks:         update
-        configuration.propagateStatus: [ update ]
         configuration.workflows:  
           launch:
-            steps:
-              - update:
-                  action: update
-                  parameters:
-                    db-root-password: "{$.db-root-password}"
-                    db-port: "{$.db-port}"
-                    recipe-url: "{$.recipe-url}"
-                    db-user: "{$.db-user}"
-                    db-user-password: "{$.db-user-password}"
-                    db-user-privileges: "{$.db-user-privileges}"
-                  output:
-                    db-host:             db-host
-                    db-port:             db-port
-                    dbms:                dbms
-                    connection:          connection
-              - run-sql:
-                  action: file-query
-                  precedingPhases: [ update ]
-                  parameters:
-                    connection: "{$.connection}"
-                    sql-url: "{$.sql-url}"
-            return:
-              db-host:             { value: "{$.db-host}"                     }
-              db-port:             { value: "{$.db-port}"                     }
-              db-root-user:        { value: "{$.dbms.db-root-user}"           }
-              db-root-password:    { value: "{$.dbms.db-root-password}"       }
-              db-user:             { value: "{$.connection.db-user}"          }
-              db-user-password:    { value: "{$.connection.db-user-password}" }
-              db-driver:           { value: "{$.connection.db-driver}"        }
-              db-validation-query: { value: "{$.connection.validation-query}" }
-              db-connection-url:   { value: "{$.connection.connection-url}"   }
-          update:
-            parameters:
-              - db-root-password:
-                  description: Oracle-DB admin password
-              - db-port:
-                  description: Oracle-DB listener port
-              - recipe-url:
-                  description: Chefsolo recipe URL
-              - db-user:
-                  description: DB user name
-              - db-user-password:
-                  description: DB user password
-              - db-user-privileges:
-                  description: DB user privileges
             steps:
               - get-signals:
                   action: getSignals
@@ -138,31 +81,27 @@ application:
                         server_repl_password: "{$.db-root-password}"
                         server_debian_password: "{$.db-root-password}"
                         port: "{$.db-port}"
-              - create-schema:
-                  action: schema-management
-                  precedingPhases: [ install-mysql-db ]
-                  parameters:
-                    db-user: "{$.db-user}"
-                    db-user-password: "{$.db-user-password}"
-                    db-user-privileges: "{$.db-user-privileges}"
-                  output:
-                    connection: connection
-            return:
-              db-host:             { value: "{$.signals.compute.networks.public.ip}" }
-              db-port:             { value: "{$.db-port}" }
+            return: # This values we want to see on application dashboard
+              db-host:
+                value: "{$.signals.compute.networks.public.ip}"
+              db-port:
+                value: "{$.db-port}"
               dbms:
                 value:
-                  db-admin-uri:     "mysql://root:{$.db-root-password}@{$.db-host}:{$.db-port}"
-                  db-root-user:     "root"
-                  db-root-password: "{$.db-root-password}"
-              connection:          { value: "{$.connection}" }
+                   db-admin-uri: "mysql://root:{$.db-root-password}@{$.signals.compute.networks.public.ip}:{$.db-port}"
+                   db-type: "mysql"
+                   db-root-user: "root"
+                   db-root-password: "{$.db-root-password}"
+                   db-host: "{$.signals.compute.networks.public.ip}"
+                   db-port: "{$.db-port}"
+                   db-driver: "com.mysql.jdbc.Driver"
               
           db-management: # Additional workflow for Database management
             steps:
               - manage-db:
                   action: "chefsolo"
                   parameters:
-                    roles: [ default ]
+                    roles: [ compute ]
                     runList: [ "recipe[mysql_component::db_manage]" ]
                     recipeUrl: "{$.recipe-url}"
                     jattrs:
@@ -179,7 +118,7 @@ application:
               - manage-user:
                   action: "chefsolo"
                   parameters:
-                    roles: [ default ]
+                    roles: [ compute ]
                     runList: [ "recipe[mysql_component::user_manage]" ]
                     recipeUrl: "{$.recipe-url}"
                     jattrs:
