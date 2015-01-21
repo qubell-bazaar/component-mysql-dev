@@ -3,7 +3,7 @@ application:
   configuration:
     configuration.db-port: 3306
     configuration.db-root-password: "uR1zaebah0Qu"
-    configuration.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-49820fe.tar.gz"
+    configuration.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-80d1883.tar.gz"
     compute.hardwareId: "c3.large"
     compute.imageId:    "ami-246ed34c"
     compute.login:      "ec2-user"
