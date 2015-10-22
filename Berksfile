@@ -6,3 +6,4 @@ cookbook 'mysql', git: "https://github.com/opscode-cookbooks/mysql.git", ref: "d
 cookbook 'openssl', git: "https://github.com/opscode-cookbooks/openssl.git", ref: "b9a52cdac76063059ff330e8427758cdeff5ee58"
 cookbook 'aws', git: "https://github.com/opscode-cookbooks/aws", ref: "26fc3e41f673dd5f0e24ea1babc92ddf7899a27a"
 cookbook "mysql_component", git: "https://github.com/qubell-bazaar/cookbook-qubell-mysql_component.git" , ref: "v0.2.0"
+cookbook 'atp', git: "https://github.com/chef-cookbooks/apt.git", ref: 'v2.6.0'
