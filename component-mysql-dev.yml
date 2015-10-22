@@ -109,11 +109,11 @@ application:
                     roleName: default
                   output: # Step output values will be used in workflow return section below
                     db-host: ips
-
               - install-mysql-db: # Action "chefsolo" search cookbooks archive by  specified recipeUrl and run recipe descrbed in runList with provided attributes
                   action: "chefsolo"
                   precedingPhases: [ provision-vm ]
                   parameters:
+                    version: "11.16.4"
                     roles: [ default ]
                     runList: ["recipe[mysql_component]"]
                     recipeUrl: "{$.recipe-url}"
@@ -144,6 +144,7 @@ application:
               - manage-db:
                   action: "chefsolo"
                   parameters:
+                    version: "11.16.4"
                     roles: [ default ]
                     runList: [ "recipe[mysql_component::db_manage]" ]
                     recipeUrl: "{$.recipe-url}"
@@ -161,6 +162,7 @@ application:
               - manage-user:
                   action: "chefsolo"
                   parameters:
+                    version: "11.16.4"
                     roles: [ default ]
                     runList: [ "recipe[mysql_component::user_manage]" ]
                     recipeUrl: "{$.recipe-url}"
@@ -182,6 +184,7 @@ application:
               - create-db:
                   action: "chefsolo"
                   parameters:
+                    version: "11.16.4"
                     roles: [ default ]
                     runList: [ "recipe[mysql_component::db_manage]" ]
                     recipeUrl: "{$.recipe-url}"
@@ -197,6 +200,7 @@ application:
                   action: "chefsolo"
                   precedingPhases: [ create-db ]
                   parameters:
+                    version: "11.16.4"
                     roles: [ default ]
                     runList: [ "recipe[mysql_component::user_manage]" ]
                     recipeUrl: "{$.recipe-url}"
@@ -232,6 +236,7 @@ application:
               - run-file-query:
                   action: "chefsolo"
                   parameters:
+                    version: "11.16.4"
                     roles: [ default ]
                     runList: [ "recipe[mysql_component::file_query]" ]
                     recipeUrl: "{$.recipe-url}"
