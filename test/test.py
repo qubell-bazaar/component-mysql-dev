@@ -16,17 +16,6 @@ from qubell.api.testing import *
             "value": "root"
         }]
     },
-    "AmazonEC2_CentOS_53": {
-        "policies": [{
-            "action": "provisionVms",
-            "parameter": "imageId",
-            "value": "us-east-1/ami-beda31d7"
-        }, {
-            "action": "provisionVms",
-            "parameter": "vmIdentity",
-            "value": "root"
-        }]
-    },
     "AmazonEC2_Ubuntu_1204": {
         "policies": [{
             "action": "provisionVms",
@@ -38,19 +27,12 @@ from qubell.api.testing import *
             "value": "ubuntu"
         }]
     },
-    "AmazonEC2_Ubuntu_1004": {
-        "policies": [{
-            "action": "provisionVms",
-            "parameter": "imageId",
-            "value": "us-east-1/ami-0fac7566"
-        }, {
-            "action": "provisionVms",
-            "parameter": "vmIdentity",
-            "value": "ubuntu"
-        }]
-    }
 })
 class MysqlTestCase(BaseComponentTestCase):
+    @classmethod
+    def timeout(cls):
+        return 30
+    
     name = "component-mysql-dev"
     apps = [{
         "name": name,
