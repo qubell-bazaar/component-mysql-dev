@@ -108,7 +108,7 @@ application:
                   action: "chefsolo"
                   precedingPhases: [ provision-vm ]
                   parameters:
-                    version: "11.16.4"
+                    version: "12.10.24"
                     roles: [ default ]
                     runList: ["recipe[mysql_component]"]
                     recipeUrl: "{$.recipe-url}"
