@@ -1,8 +1,0 @@
-simplejson
-pyaml
-requests
-PyMySQL
-PyYAML
-testtools
-nose
-nose_xunitmp
