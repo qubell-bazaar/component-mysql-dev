@@ -6,9 +6,9 @@ application:
   configuration:
     input.db-port: 3306 # Mysql listen port
     input.db-root-password: "uR1zaebah0Qu" # Mysql root password
-    input.operating-system: {image: "us-east-1/ami-1ba18d72", identity: ec2-user} # used image/identity pair for describing Operating system.
-    input.instance-size: "m1.small" # EC2 instance type
-    input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-ec8f260.tar.gz"
+    input.operating-system: {image: "ubuntu-1204-precise-v20160516", identity: gce-user} # used image/identity pair for describing Operating system.
+    input.instance-size: "g1-small" # GCE instance type
+    input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-mysql-dev-cookbooks-stable-e224969.tar.gz"
 
 # Application Interfaces binding section.
 # Here we describe a interfaces with pins  and their bindings on  component's  interfaces.
@@ -54,11 +54,6 @@ application:
         input:
           operating-system:
              type: configuration(map<string,object>)
-             suggestions: # Create dropdown menu in advanced launch
-                 "centos": {image: "us-east-1/ami-bf5021d6", identity: root}
-                 "amazon": {image: "us-east-1/ami-1ba18d72", identity: ec2-user}
-                 "ubuntu1204": {image: "us-east-1/ami-967edcff", identity: ubuntu}
-                 "ubuntu1004": {image: "us-east-1/ami-9f3906f6", identity: ubuntu}
           db-port:
              type: configuration(int)
              name: Database listen port
@@ -100,7 +95,7 @@ application:
         configuration.workflows:  
           launch: #  Launch workflow used for provision/install phase
             steps:
-              - provision-vm: # Action "provisionAmazonVm" provision vm on Amazon EC2 and return  ips list
+              - provision-vm: # Action "provisionAmazonVm" provision vm on GCE and return  ips list
                   action: provisionVms
                   parameters:
                     hardwareId: "{$.instance-size}"
@@ -113,7 +108,7 @@ application:
                   action: "chefsolo"
                   precedingPhases: [ provision-vm ]
                   parameters:
-                    version: "11.16.4"
+                    version: "12.10.24"
                     roles: [ default ]
                     runList: ["recipe[mysql_component]"]
                     recipeUrl: "{$.recipe-url}"
